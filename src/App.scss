@@ -1,0 +1,99 @@
+* {
+  font-family: 'SF Pro Display', sans-serif;
+  text-wrap: pretty;
+}
+
+/* body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#all {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.page {
+  // DEGUB STYLING
+  outline: 1px solid black;
+  //background-clip: content-box, padding-box;
+  background-color: white;
+  border-radius: 7px;
+  filter: drop-shadow(2px 2px 2px #0000005e) drop-shadow(3px 3px 4px #00000030) drop-shadow(4px 4px 9px #00000043);
+} */
+
+h1 {
+  font-family: Komplekt;
+  font-size: 24px;
+  margin: 0;
+  text-transform: uppercase;
+  color: #b01b39;
+  width: 100%;
+}
+
+h2,
+.pageNumber {
+  font-size: 11.25pt;
+  font-weight: 400;
+  margin: 0;
+  font-family: FAIRE Octave Trial;
+}
+
+p {
+  margin: 0;
+}
+
+.region {
+  font-family: FAIRE Octave Trial;
+  font-style: italic;
+}
+
+.page {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 11in;
+  width: 4in;
+  position: relative;
+  box-sizing: border-box;
+  padding: 0.125in;
+  overflow: hidden;
+}
+
+.buyerIdBox {
+  background: #ececec;
+}
+
+
+table,
+th,
+td {
+  //border: .5px solid rgb(181, 181, 181);
+  //border-collapse: collapse;
+  border-spacing: 6px;
+}
+
+td {
+  background-color: #ececec;
+}
+
+table {
+  flex: 1 1 auto;
+  width: 100%;
+  table-layout: fixed;
+}
+
+th {
+  height: 0;
+  font-weight: 300;
+  font-size: 12pt;
+  line-height: 1.15;
+}
+
+/* tr {
+  height: 50px;
+} */
