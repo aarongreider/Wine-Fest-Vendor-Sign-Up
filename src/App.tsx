@@ -1,12 +1,19 @@
-import React, { useEffect, useState } from 'react'
+import React, { RefObject, useEffect, useRef, useState } from 'react'
 import "./App.css"
-import { fetchWineData, groupBooths, groupRegions } from './utils.ts';
+import { fetchWineData, getValueByKey, groupBooths, groupDistributors, groupRegions } from './utils.ts';
 import { Booth, Bottle, Region } from './types.ts';
+import Tag from './Tag.tsx';
+import InputSelect from './InputSelect.tsx';
 
 
 function App() {
+  const [formState, setFormState] = useState({})
+  const [isSubmitted, setIsSubmitted] = useState(false)
   const [booths, setBooths] = useState<Booth[]>([])
+  const [activeBooth, setActiveBooth] = useState<Booth>({ name: "", number: 0, bottles: [] })
   const [regions, setRegions] = useState<Region[]>([])
+  const formRef = useRef<HTMLFormElement>(null)
+  const addButtonRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {  // fetch the initial data and set the state 
     const fetchData = async () => {
@@ -14,10 +21,8 @@ function App() {
         //console.log("Fetching data");
         const _bottles: Bottle[] = await fetchWineData();
         const _booths: Booth[] = groupBooths(_bottles);
-        const _regions: Region[] = groupRegions(_booths);
-        console.log(_regions)
-        //setBooths(sortedData);
-        setRegions(_regions)
+        //const _regions: Region[] = groupRegions(_booths);
+        setBooths(_booths);
       } catch {
         console.log("Error fetching data in useEffect");
       }
@@ -26,36 +31,161 @@ function App() {
     fetchData();
   }, [])
 
-  return <div id="all">
-    {/* consider slicing booths in pieces because html2pdf taps out around 25 pages */}
-    {regions.map((region, i) => {
-      return <React.Fragment key={i}>
-        {region.booths.map((booth, index) => {
-          return <div key={index} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: "flex-start", width: '8.5in', height: '11in', padding: '.25in', boxSizing: 'border-box',  }}>
-            <h1>{booth.name}</h1>
-            <h2>{booth.bottles[0]['What country or region is this wine from?']} — table: {booth.number}</h2>
-            <br></br>
-            <table style={{ border: '1px solid black' }}>
-              <tr>
-                <th style={{ width: '175px', textAlign:'left' }}>Buyer's Club #</th>
-                {booth.bottles.map((bottle, index) => {
-                  return <th key={index} style={{padding: '5px 10px'}}>{bottle['Wine Name / Type']}</th>
-                })}
-              </tr>
-              {[...Array(30)].map((_, k) => {
-                return <tr key={k}>
-                  {[...Array(booth.bottles.length + 1)].map((_, j) => {
-                    return <td key={j}></td>
-                  })}
-                </tr>
-              })}
-            </table>
-          </div>
-        })}
-      </React.Fragment>
-    })}
+  const handleChangeSimple = (e: any) => {
+    console.log("change", e.target.name, e.target.value)
+    setFormState(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
-  </div >
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setIsSubmitted(true)
+    console.log(formState)
+    try {
+      postForm()
+    } catch (error) {
+      console.log(error)
+    }
+    formRef.current?.reset()
+    setFormState({})
+  }
+
+  const handleSetActiveBooth = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    console.log(e.target.value)
+ 
+  }
+  const handleBoothSelect = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault()
+        const target = e.target as HTMLButtonElement
+           let boothMatch: Booth | undefined = booths.find((booth) => booth.name == target.value)
+    console.log(boothMatch)
+    boothMatch != undefined ? setActiveBooth(boothMatch) : undefined
+    }
+
+  const deleteBottle = (item: Bottle) => {
+    // filter bottle is not equal to incoming bottle
+    console.log("trying to remove item, ", item['Wine Name / Type'], item['Booth Name'])
+  }
+
+
+  const postForm = async () => {
+    try {
+      const response = await fetch("https://script.google.com/macros/s/AKfycby0NfF1QI2eICYik9viJqiICdFdPwMrL-IxpjHD8FWYaK1LwHuUpTSAz93oVOGn3qSRcQ/exec",
+        {
+          redirect: "follow",
+          method: "POST",
+          body: JSON.stringify({
+            action: "formSubmit",
+            formData: formState
+          }),
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8',
+          }
+        }
+      )
+
+      if (!response.ok) {
+        console.log("Server Error. Please wait one moment and resubmit.")
+        //setSubState(subStates.errorServer)
+        throw new Error('Network response was not ok');
+      }
+
+      var data = await response.json();
+      console.log("server response:");
+      console.log(data);
+      console.log(JSON.parse(data.eventObject.postData.contents));
+
+      /* if (isSubmitted) {
+        console.log("Submitted")
+        //setSubState(subStates.success)
+      } */
+    } catch (error) {
+      //setSubState(subStates.errorServer)
+      console.error('There was a problem with the fetch operation:', error);
+      throw error; // Ensure the error is propagated if necessary 
+
+    }
+  }
+
+  return <>
+    <form action="" onSubmit={handleSubmit} ref={formRef}>
+      <div className="flex column">
+        <p>
+          Use this form to add a new winery, new distributor, or a new wine to your booth catalogue.
+          Please submit this form once for each wine in your catalogue.
+        </p>
+        <p>
+          If you realize you need to remove a wine from your wine catalogue, use the form link below to make an official log of them or reach out to TJ Askren at taskren@junglejims.com.
+          If you are simply adding more wines to your catalogue, use this current form.
+        </p>
+        <a href="https://forms.gle/bveAaPM2D44VhCQi9">https://forms.gle/bveAaPM2D44VhCQi9</a>
+        <br />
+      </div>
+
+      <div>
+        <label htmlFor="email">Email:&nbsp;&nbsp;</label>
+        <input type="email" name="email" id="email" required onChange={handleChangeSimple} />
+      </div>
+
+      {/* <div>
+        <label htmlFor="boothSelect">Select Your Booth:&nbsp;&nbsp;</label>
+        <select name="boothSelect" required onChange={handleSetActiveBooth}>
+          <option key={`default`} value="default" >--Please Select a Booth--</option>
+          {booths.map((booth) => <option key={`${booth}`} value={booth.name}>{booth.name}</option>)}
+        </select>
+      </div> */}
+
+      <InputSelect label="Select a Booth" items={booths} _key="name" handleChange={handleBoothSelect}/>
+
+      {/* <div className="flex column">
+        <div className="flex">
+          <label htmlFor="distributor_name">Distributor Name:&nbsp;&nbsp;</label>
+          <input type="distributor_name" name="distributor_name" id="distributor_name" required onChange={handleChangeSimple} />
+        </div>
+        <div className="flex">
+          <label htmlFor="distributor_phone">Distributor Phone:&nbsp;&nbsp;</label>
+          <input type="distributor_phone" name="distributor_phone" id="distributor_phone" required onChange={handleChangeSimple} />
+        </div>
+        <div className="flex">
+          <label htmlFor="distributor_email">Distributor Email:&nbsp;&nbsp;</label>
+          <input type="distributor_email" name="distributor_email" id="distributor_email" required onChange={handleChangeSimple} />
+        </div>
+      </div>
+
+      <div className="flex column">
+        <div className="flex">
+          <label htmlFor="winery_name">Winery Name:&nbsp;&nbsp;</label>
+          <input type="winery_name" name="winery_name" id="winery_name" required onChange={handleChangeSimple} />
+        </div>
+        <div className="flex">
+          <label htmlFor="winery_phone">Winery Phone:&nbsp;&nbsp;</label>
+          <input type="winery_phone" name="winery_phone" id="winery_phone" required onChange={handleChangeSimple} />
+        </div>
+        <div className="flex">
+          <label htmlFor="winery_email">Winery Email:&nbsp;&nbsp;</label>
+          <input type="winery_email" name="winery_email" id="winery_email" required onChange={handleChangeSimple} />
+        </div>
+      </div> */}
+
+      <div className="flex">
+        <label htmlFor="booth_name">Booth Name:&nbsp;&nbsp;</label>
+        <input type="booth_name" name="booth_name" id="booth_name" required onChange={handleChangeSimple} />
+      </div>
+
+
+      <div style={{ display: 'flex', gap: "8px", flexWrap: 'wrap', marginBottom: '20px', maxWidth: "100%", overflow: "scroll" }}>
+        {activeBooth?.bottles.length > 0
+          ? activeBooth.bottles.map((bottle, index) => <Tag key={`${bottle}-${index}`} item={bottle} deleteBottle={deleteBottle} />)
+          : <i>No wines here–Try adding one!</i>}
+      </div>
+
+      {/* <label htmlFor="ProductInput">Add a new wine:&nbsp;&nbsp;</label>
+      <input name="ProductInput" type='text' placeholder="Sauce Name" onKeyDown={(e) => e.key == "Enter" ? handleAddProduct(e) : undefined} ref={addButtonRef}></input><button type="button" style={{ textWrap: 'nowrap' }} onClick={handleAddProduct}>Add +</button>
+ */}
+      <button type='submit' value="Submit">Submit</button>
+      {isSubmitted ? <p>Your response has been recorded. Thank you for making our 2026 Weekend of Fire possible!</p> : undefined}
+    </form>
+  </>
 }
 
 export default App

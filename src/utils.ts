@@ -20,6 +20,13 @@ export const fetchWineData = async (): Promise<Bottle[]> => {
     }
 }
 
+
+export const getValueByKey = (data: Bottle[], key: keyof Bottle) => {
+    // get array of all booth names / whatever key is passed in, remove duplicates and sort alphabetically
+    let values = new Set(data.map(booth => booth[key]).sort())
+    return [...values]
+}
+
 export const groupBooths = (response: Bottle[]): Booth[] => {
     // take in the json response and return an object containing each section as an array of items in that section
     // Assuming your data is in an array of objects
