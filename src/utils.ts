@@ -20,6 +20,14 @@ export const fetchWineData = async (): Promise<Bottle[]> => {
     }
 }
 
+export const getActiveBooth = (booths: Booth[], activeBoothName: string | undefined) => {
+    const match = booths.find((booth) => booth.name === activeBoothName)
+    if (!match) {
+        return {} as Booth
+    }
+    return match
+}
+
 
 export const getValueByKey = (data: Bottle[], key: keyof Bottle) => {
     // get array of all booth names / whatever key is passed in, remove duplicates and sort alphabetically

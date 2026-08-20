@@ -1,6 +1,6 @@
 import React, { RefObject, useEffect, useRef, useState } from 'react'
 import "./App.css"
-import { fetchWineData, getValueByKey, groupBooths, groupDistributors, groupRegions } from './utils.ts';
+import { fetchWineData, getActiveBooth, getValueByKey, groupBooths, groupDistributors, groupRegions } from './utils.ts';
 import { Booth, Bottle, Region } from './types.ts';
 import Tag from './Tag.tsx';
 import InputSelect from './InputSelect.tsx';
@@ -10,7 +10,7 @@ function App() {
   const [formState, setFormState] = useState({})
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [booths, setBooths] = useState<Booth[]>([])
-  const [activeBooth, setActiveBooth] = useState<Booth>({ name: "", number: 0, bottles: [] })
+  const [activeBoothName, setActiveBoothName] = useState<string>()
   const [regions, setRegions] = useState<Region[]>([])
   const formRef = useRef<HTMLFormElement>(null)
   const addButtonRef = useRef<HTMLInputElement>(null)
@@ -34,7 +34,6 @@ function App() {
   const handleChangeSimple = (e: any) => {
     console.log("change", e.target.name, e.target.value)
     setFormState(prev => ({ ...prev, [e.target.name]: e.target.value }));
-
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -52,20 +51,22 @@ function App() {
 
   const handleSetActiveBooth = (e: React.ChangeEvent<HTMLSelectElement>) => {
     console.log(e.target.value)
- 
+
   }
   const handleBoothSelect = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault()
-        const target = e.target as HTMLButtonElement
-           let boothMatch: Booth | undefined = booths.find((booth) => booth.name == target.value)
+    e.preventDefault()
+    const target = e.target as HTMLButtonElement
+    let boothMatch: Booth | undefined = booths.find((booth) => booth.name == target.value)
     console.log(boothMatch)
-    boothMatch != undefined ? setActiveBooth(boothMatch) : undefined
-    }
+    boothMatch != undefined ? setActiveBoothName(boothMatch.name) : undefined
+  }
 
   const deleteBottle = (item: Bottle) => {
     // filter bottle is not equal to incoming bottle
     console.log("trying to remove item, ", item['Wine Name / Type'], item['Booth Name'])
+
   }
+
 
 
   const postForm = async () => {
@@ -127,15 +128,8 @@ function App() {
         <input type="email" name="email" id="email" required onChange={handleChangeSimple} />
       </div>
 
-      {/* <div>
-        <label htmlFor="boothSelect">Select Your Booth:&nbsp;&nbsp;</label>
-        <select name="boothSelect" required onChange={handleSetActiveBooth}>
-          <option key={`default`} value="default" >--Please Select a Booth--</option>
-          {booths.map((booth) => <option key={`${booth}`} value={booth.name}>{booth.name}</option>)}
-        </select>
-      </div> */}
 
-      <InputSelect label="Select a Booth" items={booths} _key="name" handleChange={handleBoothSelect}/>
+      <InputSelect label="Select a Booth" items={booths} _key="name" handleChange={handleBoothSelect} />
 
       {/* <div className="flex column">
         <div className="flex">
@@ -167,23 +161,25 @@ function App() {
         </div>
       </div> */}
 
-      <div className="flex">
+      {/* <div className="flex">
         <label htmlFor="booth_name">Booth Name:&nbsp;&nbsp;</label>
         <input type="booth_name" name="booth_name" id="booth_name" required onChange={handleChangeSimple} />
-      </div>
+      </div> */}
 
 
       <div style={{ display: 'flex', gap: "8px", flexWrap: 'wrap', marginBottom: '20px', maxWidth: "100%", overflow: "scroll" }}>
-        {activeBooth?.bottles.length > 0
-          ? activeBooth.bottles.map((bottle, index) => <Tag key={`${bottle}-${index}`} item={bottle} deleteBottle={deleteBottle} />)
-          : <i>No wines here–Try adding one!</i>}
+        {activeBoothName && booths ?
+          getActiveBooth(booths, activeBoothName).bottles.length > 0
+            ? getActiveBooth(booths, activeBoothName).bottles.map((bottle, index) => <Tag key={`${bottle}-${index}`} item={bottle} deleteBottle={deleteBottle} />)
+            : <i>No wines here–Try adding one!</i>
+          : undefined}
       </div>
 
       {/* <label htmlFor="ProductInput">Add a new wine:&nbsp;&nbsp;</label>
       <input name="ProductInput" type='text' placeholder="Sauce Name" onKeyDown={(e) => e.key == "Enter" ? handleAddProduct(e) : undefined} ref={addButtonRef}></input><button type="button" style={{ textWrap: 'nowrap' }} onClick={handleAddProduct}>Add +</button>
  */}
       <button type='submit' value="Submit">Submit</button>
-      {isSubmitted ? <p>Your response has been recorded. Thank you for making our 2026 Weekend of Fire possible!</p> : undefined}
+      {isSubmitted ? <p>Your response has been recorded. Thank you for making our 2026 International Wine Festival possible!</p> : undefined}
     </form>
   </>
 }
