@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Bottle } from "./types"
-import InputSelect from "./InputSelect"
+import BottleForm from "./BottleForm"
 
 interface props {
     item: Bottle,
@@ -18,17 +18,15 @@ export default function Tag({ item, bottles, loading, deleteBottle, editBottle }
     const handleEdit = (e: React.ChangeEvent<HTMLInputElement>) => {
         // Handle edit logic here
     }
-    const handleComboSelectChange = (e: React.MouseEvent<HTMLButtonElement>, key: String) => {
-        console.log(e)
-        const target = e.target as HTMLButtonElement
-        setDraftItem({...draftItem, [`${key}`]: target.value})
+    const handleBottleChange = (key: keyof Bottle, value: string) => {
+        setDraftItem((currentDraft) => ({ ...currentDraft, [key]: value }))
     }
 
     const toggle = () => {
         setToggled(!toggled)
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         console.log(draftItem)
     }, [draftItem])
 
@@ -43,46 +41,13 @@ export default function Tag({ item, bottles, loading, deleteBottle, editBottle }
                     </div>
                 </div>
                 <div className="content" style={{ display: `${toggled ? "flex" : "none"}`, flexDirection: "column" }}>
-                    {/* <div className="flex">
-                        <p>region: </p>
-                        <input type="text" readOnly={!editing} value={item["What country or region is this wine from?"]} onChange={handleEdit} />
-                    </div> */}
-
-                    {/* <div className="flex">
-                        <p>winery: </p>
-                        <input type="text" readOnly={!editing} value={item["Winery Name"]} onChange={handleEdit} />
-                    </div> */}
-                    {/* <div className="flex">
-                        <p>distributor: </p>
-                        <input type="text" readOnly={!editing} value={item["Distributor Name"]} onChange={handleEdit} />
-                    </div> */}
-                    <InputSelect
-                        key={`region ${item["What country or region is this wine from?"]}`}
-                        label={"region"}
-                        items={bottles}
-                        _key={"What country or region is this wine from?"}
+                    <BottleForm
+                        item={draftItem}
+                        bottles={bottles}
                         loading={loading}
-                        initialValue={item["What country or region is this wine from?"]}
                         readOnly={!editing}
-                        handleChange={(e)=>handleComboSelectChange(e, "What country or region is this wine from?")} />
-                    <InputSelect
-                        key={`winery ${item["Winery Name"]}`}
-                        label={"winery"}
-                        items={bottles}
-                        _key={"Winery Name"}
-                        loading={loading}
-                        initialValue={item["Winery Name"]}
-                        readOnly={!editing}
-                        handleChange={(e)=>handleComboSelectChange(e, "Winery Name")} />
-                    <InputSelect
-                        key={`distributor ${item["Distributor Name"]}`}
-                        label={"distributor"}
-                        items={bottles}
-                        _key={"Distributor Name"}
-                        loading={loading}
-                        initialValue={item["Distributor Name"]}
-                        readOnly={!editing}
-                        handleChange={(e)=>handleComboSelectChange(e, "Distributor Name")} />
+                        handleChange={handleBottleChange}
+                    />
                     <u onClick={() => deleteBottle(item)}>Delete Wine</u>
                     {editing
                         ? <u onClick={() => { editBottle(draftItem); setEditing(false) }}>Save Changes to Wine</u>

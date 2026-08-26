@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Booth, Bottle } from "./types"
-import InputSelect from "./InputSelect"
+import BottleForm from "./BottleForm"
 
 interface props {
     bottles: Bottle[]
@@ -51,10 +51,8 @@ export default function NewBottleForm({ bottles, activeBooth, loading, addBottle
         addBottle(draftItem as Bottle)
     }
 
-    const handleComboSelectChange = (e: React.MouseEvent<HTMLButtonElement>, key: String) => {
-        console.log(e)
-        const target = e.target as HTMLButtonElement
-        setDraftItem({ ...draftItem, [`${key}`]: target.value })
+    const handleBottleChange = (key: keyof Bottle, value: string) => {
+        setDraftItem((currentDraft) => ({ ...currentDraft, [key]: value }))
     }
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, key: String) => {
         console.log(e)
@@ -65,27 +63,12 @@ export default function NewBottleForm({ bottles, activeBooth, loading, addBottle
             <label htmlFor="wineNameNew">Wine Name or Type</label>
             <input type="text" id="wineNameNew" onChange={(e) => handleInputChange(e, "Wine Name / Type")}></input>
         </div>
-        <InputSelect
-            key={`regionNew`}
-            label={"region"}
-            items={bottles}
-            _key={"What country or region is this wine from?"}
+        <BottleForm
+            item={draftItem}
+            bottles={bottles}
             loading={loading}
-            handleChange={(e) => handleComboSelectChange(e, "What country or region is this wine from?")} />
-        <InputSelect
-            key={`wineryNew`}
-            label={"winery"}
-            items={bottles}
-            _key={"Winery Name"}
-            loading={loading}
-            handleChange={(e) => handleComboSelectChange(e, "Winery Name")} />
-        <InputSelect
-            key={`distributorNew`}
-            label={"distributor"}
-            items={bottles}
-            _key={"Distributor Name"}
-            loading={loading}
-            handleChange={(e) => handleComboSelectChange(e, "Distributor Name")} />
+            handleChange={handleBottleChange}
+        />
 
         <button onClick={handleSubmit}>Add Wine</button>
     </>
