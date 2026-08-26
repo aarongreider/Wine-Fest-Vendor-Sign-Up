@@ -11,6 +11,7 @@ function App() {
   const [changeLog, setChangeLog] = useState<Map<string, Edit>>(new Map())
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [booths, setBooths] = useState<Booth[]>([])
+  const [bottles, setBottles] = useState<Bottle[]>([])
   const [activeBoothName, setActiveBoothName] = useState<string>()
   const [regions, setRegions] = useState<Region[]>([])
   const formRef = useRef<HTMLFormElement>(null)
@@ -24,6 +25,7 @@ function App() {
         const _booths: Booth[] = groupBooths(_bottles);
         //const _regions: Region[] = groupRegions(_booths);
         setBooths(_booths);
+        setBottles(_bottles);
       } catch {
         console.log("Error fetching data in useEffect");
       }
@@ -97,7 +99,7 @@ function App() {
     if (!activeBoothName) return
 
     addToChangeLog(item, EditTypes.CHANGE)
-
+    
     setBooths((currentBooths) =>
       currentBooths.map((booth) =>
         booth.name === activeBoothName
@@ -226,7 +228,7 @@ function App() {
       <div style={{ display: 'flex', flexDirection:"column", gap: "8px", flexWrap: 'wrap', marginBottom: '20px', maxWidth: "100%", overflow: "scroll" }}>
         {activeBoothName && booths ?
           getActiveBooth(booths, activeBoothName).bottles.length > 0
-            ? getActiveBooth(booths, activeBoothName).bottles.map((bottle, index) => <Tag key={`${bottle}-${index}`} item={bottle} items={getActiveBooth(booths, activeBoothName).bottles} deleteBottle={deleteBottle} editBottle={changeBottle}/>)
+            ? getActiveBooth(booths, activeBoothName).bottles.map((bottle, index) => <Tag key={`${bottle}-${index}`} item={bottle} bottles={bottles} deleteBottle={deleteBottle} editBottle={changeBottle}/>)
             : <i>No wines here–Try adding one!</i>
           : undefined}
       </div>

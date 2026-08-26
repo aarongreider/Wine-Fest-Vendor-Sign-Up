@@ -80,7 +80,8 @@ form {
   flex-direction: row;
   flex-wrap: wrap;
   gap: 4px;
-  overflow: scroll;
+  overflow-y: scroll;
+  scrollbar-width: thin;
   max-height: 25vh;
 }
 .InputSelect button {
