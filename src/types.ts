@@ -40,9 +40,9 @@ export type Distributor = {
     booths: Booth[]
 }
 
-enum EditTypes { CHANGE="CHANGE", ADD="ADD", DELETE="DELETE" }
+export enum EditTypes { CHANGE="CHANGE", ADD="ADD", DELETE="DELETE" }
 
 export type Edit = {
-    Bottle: {}
+    bottle: Bottle
     type: EditTypes
 }

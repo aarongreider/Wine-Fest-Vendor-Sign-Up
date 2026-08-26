@@ -22,22 +22,6 @@ form {
     max-width: 100%;
 }
 
-.tag {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: nowrap;
-    gap: 8px;
-    padding: 8px;
-    background: rgb(63, 63, 63);
-    color: white;
-    /*  width: min-content; */
-}
-
-.tag p {
-    /* text-wrap: nowrap; */
-    max-width: 100%;
-}
 
 .flex {
     display: flex;
@@ -56,6 +40,48 @@ form {
 
     label {
         text-wrap: nowrap;
+    }
+}
+
+
+.tag {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    gap: 8px;
+    padding: 8px;
+    background: rgb(63, 63, 63);
+    color: white;
+
+    .banner {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        
+        width: 100%;
+        padding: 6px 0;
+        box-sizing: border-box;
+    }
+
+    .content {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    h3 {
+        margin: 0;
+    }
+
+    u {
+        font-family: monospace;
+        font-size: 12px;
+        line-height: 1.75;
+
+        align-self: flex-end;
     }
 }
 

@@ -1,13 +1,14 @@
 import React, { RefObject, useEffect, useRef, useState } from 'react'
 import "./App.css"
 import { fetchWineData, getActiveBooth, getValueByKey, groupBooths, groupDistributors, groupRegions } from './utils.ts';
-import { Booth, Bottle, Region } from './types.ts';
+import { Booth, Bottle, Edit, EditTypes, Region } from './types.ts';
 import Tag from './Tag.tsx';
 import InputSelect from './InputSelect.tsx';
 
 
 function App() {
   const [formState, setFormState] = useState({})
+  const [changeLog, setChangeLog] = useState<Map<string, Edit>>(new Map())
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [booths, setBooths] = useState<Booth[]>([])
   const [activeBoothName, setActiveBoothName] = useState<string>()
@@ -49,10 +50,6 @@ function App() {
     setFormState({})
   }
 
-  const handleSetActiveBooth = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log(e.target.value)
-
-  }
   const handleBoothSelect = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     const target = e.target as HTMLButtonElement
@@ -62,12 +59,67 @@ function App() {
   }
 
   const deleteBottle = (item: Bottle) => {
-    // filter bottle is not equal to incoming bottle
-    console.log("trying to remove item, ", item['Wine Name / Type'], item['Booth Name'])
+    console.log("removing item, ", item['Wine Name / Type'], item['Booth Name'])
+    if (!activeBoothName) return
 
+    addToChangeLog(item, EditTypes.DELETE)
+
+    setBooths((currentBooths) =>
+      currentBooths.map((booth) =>
+        booth.name === activeBoothName
+          ? {
+            ...booth,
+            bottles: booth.bottles.filter((bottle) => bottle['Wine ID'] !== item['Wine ID'])
+          }
+          : booth
+      )
+    )
+  }
+  const addBottle = (item: Bottle) => {
+    console.log("adding item, ", item['Wine Name / Type'], item['Booth Name'])
+    if (!activeBoothName) return
+
+    addToChangeLog(item, EditTypes.ADD)
+
+    setBooths((currentBooths) =>
+      currentBooths.map((booth) =>
+        booth.name === activeBoothName
+          ? {
+            ...booth,
+            bottles: [...booth.bottles, item]
+          }
+          : booth
+      )
+    )
+  }
+  const changeBottle = (item: Bottle) => {
+    console.log("changing item, ", item['Wine Name / Type'], item['Booth Name'])
+    if (!activeBoothName) return
+
+    addToChangeLog(item, EditTypes.CHANGE)
+
+    setBooths((currentBooths) =>
+      currentBooths.map((booth) =>
+        booth.name === activeBoothName
+          ? {
+            ...booth,
+            bottles: booth.bottles.map((bottle) => bottle['Wine ID'] === item['Wine ID'] ? item : bottle)
+          }
+          : booth
+      )
+    )
   }
 
+  const addToChangeLog = (bottle: Bottle, type: EditTypes) => {
+    const wineId = bottle['Wine ID']
+    const newChange: Edit = { bottle, type }
 
+    setChangeLog((currentLog) => {
+      const updated = new Map(currentLog)
+      updated.set(wineId, newChange)
+      return updated
+    })
+  }
 
   const postForm = async () => {
     try {
@@ -107,6 +159,10 @@ function App() {
 
     }
   }
+
+  useEffect(() => {
+    console.log(JSON.stringify(Object.fromEntries(changeLog)))
+  }, [changeLog])
 
   return <>
     <form action="" onSubmit={handleSubmit} ref={formRef}>
@@ -167,10 +223,10 @@ function App() {
       </div> */}
 
 
-      <div style={{ display: 'flex', gap: "8px", flexWrap: 'wrap', marginBottom: '20px', maxWidth: "100%", overflow: "scroll" }}>
+      <div style={{ display: 'flex', flexDirection:"column", gap: "8px", flexWrap: 'wrap', marginBottom: '20px', maxWidth: "100%", overflow: "scroll" }}>
         {activeBoothName && booths ?
           getActiveBooth(booths, activeBoothName).bottles.length > 0
-            ? getActiveBooth(booths, activeBoothName).bottles.map((bottle, index) => <Tag key={`${bottle}-${index}`} item={bottle} deleteBottle={deleteBottle} />)
+            ? getActiveBooth(booths, activeBoothName).bottles.map((bottle, index) => <Tag key={`${bottle}-${index}`} item={bottle} items={getActiveBooth(booths, activeBoothName).bottles} deleteBottle={deleteBottle} editBottle={changeBottle}/>)
             : <i>No wines here–Try adding one!</i>
           : undefined}
       </div>
