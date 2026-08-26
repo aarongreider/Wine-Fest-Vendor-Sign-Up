@@ -5,9 +5,10 @@ import InputSelect from "./InputSelect"
 interface props {
     bottles: Bottle[]
     activeBooth: Booth
+    loading: boolean
     addBottle: (item: Bottle) => void
 }
-export default function NewBottleForm({ bottles, activeBooth, addBottle }: props) {
+export default function NewBottleForm({ bottles, activeBooth, loading, addBottle }: props) {
     const [draftItem, setDraftItem] = useState<Bottle>({
         "Booth Name": activeBooth.name,
         "Timestamp": new Date().toISOString(),
@@ -69,18 +70,21 @@ export default function NewBottleForm({ bottles, activeBooth, addBottle }: props
             label={"region"}
             items={bottles}
             _key={"What country or region is this wine from?"}
+            loading={loading}
             handleChange={(e) => handleComboSelectChange(e, "What country or region is this wine from?")} />
         <InputSelect
             key={`wineryNew`}
             label={"winery"}
             items={bottles}
             _key={"Winery Name"}
+            loading={loading}
             handleChange={(e) => handleComboSelectChange(e, "Winery Name")} />
         <InputSelect
             key={`distributorNew`}
             label={"distributor"}
             items={bottles}
             _key={"Distributor Name"}
+            loading={loading}
             handleChange={(e) => handleComboSelectChange(e, "Distributor Name")} />
 
         <button onClick={handleSubmit}>Add Wine</button>

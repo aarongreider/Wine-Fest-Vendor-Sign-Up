@@ -5,11 +5,12 @@ import InputSelect from "./InputSelect"
 interface props {
     item: Bottle,
     bottles: Bottle[],
+    loading: boolean,
     deleteBottle: (item: Bottle) => void
     editBottle: (item: Bottle) => void
 }
 
-export default function Tag({ item, bottles, deleteBottle, editBottle }: props) {
+export default function Tag({ item, bottles, loading, deleteBottle, editBottle }: props) {
     const [toggled, setToggled] = useState<boolean>(false)
     const [editing, setEditing] = useState<boolean>(false)
     const [draftItem, setDraftItem] = useState<Bottle>(item)
@@ -60,6 +61,7 @@ export default function Tag({ item, bottles, deleteBottle, editBottle }: props) 
                         label={"region"}
                         items={bottles}
                         _key={"What country or region is this wine from?"}
+                        loading={loading}
                         initialValue={item["What country or region is this wine from?"]}
                         readOnly={!editing}
                         handleChange={(e)=>handleComboSelectChange(e, "What country or region is this wine from?")} />
@@ -68,6 +70,7 @@ export default function Tag({ item, bottles, deleteBottle, editBottle }: props) 
                         label={"winery"}
                         items={bottles}
                         _key={"Winery Name"}
+                        loading={loading}
                         initialValue={item["Winery Name"]}
                         readOnly={!editing}
                         handleChange={(e)=>handleComboSelectChange(e, "Winery Name")} />
@@ -76,6 +79,7 @@ export default function Tag({ item, bottles, deleteBottle, editBottle }: props) 
                         label={"distributor"}
                         items={bottles}
                         _key={"Distributor Name"}
+                        loading={loading}
                         initialValue={item["Distributor Name"]}
                         readOnly={!editing}
                         handleChange={(e)=>handleComboSelectChange(e, "Distributor Name")} />

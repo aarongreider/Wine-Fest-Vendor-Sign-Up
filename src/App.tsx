@@ -9,6 +9,7 @@ import NewBottleForm from './NewBottleForm.tsx';
 
 function App() {
   const [formState, setFormState] = useState({})
+  const [loading, setLoading] = useState<boolean>(true)
   const [changeLog, setChangeLog] = useState<Map<string, Edit>>(new Map())
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [booths, setBooths] = useState<Booth[]>([])
@@ -29,6 +30,7 @@ function App() {
         //const _regions: Region[] = groupRegions(_booths);
         setBooths(_booths);
         setBottles(_bottles);
+        setLoading(false)
       } catch {
         console.log("Error fetching data in useEffect");
       }
@@ -61,6 +63,24 @@ function App() {
     let boothMatch: Booth | undefined = booths.find((booth) => booth.name == target.value)
     console.log(boothMatch)
     boothMatch != undefined ? setActiveBoothName(boothMatch.name) : undefined
+  }
+
+  const addPlaceholderBooth = (name: string) => {
+    const boothName = name.trim()
+    if (!boothName) return
+
+    setBooths((currentBooths) => {
+      if (currentBooths.some((booth) => booth.name === boothName)) {
+        return currentBooths
+      }
+
+      return [...currentBooths, {
+        name: boothName,
+        number: `placeholder-${Date.now()}`,
+        bottles: [],
+      }]
+    })
+    setActiveBoothName(boothName)
   }
 
   const deleteBottle = (item: Bottle) => {
@@ -183,6 +203,10 @@ function App() {
     setActiveBooth(booth)
   })
 
+  useEffect(() => {
+    setAddingBottle(false)
+  }, [activeBoothName])
+
   return <>
     <form action="" onSubmit={handleSubmit} ref={formRef}>
       <div className="flex column">
@@ -204,10 +228,15 @@ function App() {
       </div>
 
 
-      <InputSelect label="Select a Booth" items={booths} _key="name" handleChange={handleBoothSelect} />
+      <InputSelect label="Select a Booth" items={booths} _key="name" loading={loading} handleChange={handleBoothSelect} handleAdd={addPlaceholderBooth} />
 
+      {activeBoothName && <div className="flex column" style={{gap: 0}}>
+        <hr style={{ width: '100%', marginTop: "30px" }} />
+        <i>Currently Editing</i>
+        <h3 style={{ padding: 0, margin: 0 }}>{activeBoothName}</h3>
+      </div>}
       <button style={{ textWrap: 'nowrap' }} onClick={startAddBottle}>+ Add a Wine</button>
-      {addingBottle && activeBooth ? <NewBottleForm bottles={bottles} activeBooth={activeBooth} addBottle={addBottle} /> : undefined}
+      {addingBottle && activeBooth ? <NewBottleForm bottles={bottles} activeBooth={activeBooth} loading={loading} addBottle={addBottle} /> : undefined}
       {/* <div className="flex column">
         <div className="flex">
           <label htmlFor="distributor_name">Distributor Name:&nbsp;&nbsp;</label>
@@ -247,7 +276,7 @@ function App() {
       <div style={{ display: 'flex', flexDirection: "column", gap: "8px", flexWrap: 'wrap', marginBottom: '20px', maxWidth: "100%", overflow: "scroll" }}>
         {activeBooth ?
           activeBooth.bottles.length > 0
-            ? activeBooth.bottles.map((bottle, index) => <Tag key={`${bottle}-${index}`} item={bottle} bottles={bottles} deleteBottle={deleteBottle} editBottle={changeBottle} />)
+            ? activeBooth.bottles.map((bottle, index) => <Tag key={`${bottle}-${index}`} item={bottle} bottles={bottles} loading={loading} deleteBottle={deleteBottle} editBottle={changeBottle} />)
             : <i>No wines here–Try adding one!</i>
           : undefined}
       </div>
