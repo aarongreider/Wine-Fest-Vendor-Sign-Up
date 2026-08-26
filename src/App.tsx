@@ -64,42 +64,32 @@ function App() {
     console.log("removing item, ", item['Wine Name / Type'], item['Booth Name'])
     if (!activeBoothName) return
 
+    const prompt = confirm(`are you sure you want to delete ${item['Wine Name / Type']}?`)
+    if (!prompt) return
     addToChangeLog(item, EditTypes.DELETE)
-
-    setBooths((currentBooths) =>
-      currentBooths.map((booth) =>
-        booth.name === activeBoothName
-          ? {
-            ...booth,
-            bottles: booth.bottles.filter((bottle) => bottle['Wine ID'] !== item['Wine ID'])
-          }
-          : booth
-      )
-    )
+    setBottles((currentBottles) => currentBottles.filter((bottle) =>
+      String(bottle['Wine ID']) !== String(item['Wine ID'])
+    ))
   }
+
   const addBottle = (item: Bottle) => {
     console.log("adding item, ", item['Wine Name / Type'], item['Booth Name'])
     if (!activeBoothName) return
 
     addToChangeLog(item, EditTypes.ADD)
-
-    setBooths((currentBooths) =>
-      currentBooths.map((booth) =>
-        booth.name === activeBoothName
-          ? {
-            ...booth,
-            bottles: [...booth.bottles, item]
-          }
-          : booth
-      )
-    )
+    setBottles(bottles => [...bottles, item])
   }
+
   const changeBottle = (item: Bottle) => {
     console.log("changing item, ", item['Wine Name / Type'], item['Booth Name'])
+    addToChangeLog(item, EditTypes.CHANGE)
+
+    setBottles((currentBottles) => currentBottles.map((bottle) =>
+      String(bottle['Wine ID']) === String(item['Wine ID']) ? item : bottle
+    ))
+
     if (!activeBoothName) return
 
-    addToChangeLog(item, EditTypes.CHANGE)
-    
     setBooths((currentBooths) =>
       currentBooths.map((booth) =>
         booth.name === activeBoothName
@@ -166,6 +156,13 @@ function App() {
     console.log(JSON.stringify(Object.fromEntries(changeLog)))
   }, [changeLog])
 
+  useEffect(() => {
+    console.log(bottles)
+    setBooths(groupBooths(bottles))
+  }, [bottles])
+
+  const activeBooth = getActiveBooth(booths, activeBoothName)
+
   return <>
     <form action="" onSubmit={handleSubmit} ref={formRef}>
       <div className="flex column">
@@ -225,10 +222,10 @@ function App() {
       </div> */}
 
 
-      <div style={{ display: 'flex', flexDirection:"column", gap: "8px", flexWrap: 'wrap', marginBottom: '20px', maxWidth: "100%", overflow: "scroll" }}>
-        {activeBoothName && booths ?
-          getActiveBooth(booths, activeBoothName).bottles.length > 0
-            ? getActiveBooth(booths, activeBoothName).bottles.map((bottle, index) => <Tag key={`${bottle}-${index}`} item={bottle} bottles={bottles} deleteBottle={deleteBottle} editBottle={changeBottle}/>)
+      <div style={{ display: 'flex', flexDirection: "column", gap: "8px", flexWrap: 'wrap', marginBottom: '20px', maxWidth: "100%", overflow: "scroll" }}>
+        {activeBooth ?
+          activeBooth.bottles.length > 0
+            ? activeBooth.bottles.map((bottle, index) => <Tag key={`${bottle}-${index}`} item={bottle} bottles={bottles} deleteBottle={deleteBottle} editBottle={changeBottle} />)
             : <i>No wines here–Try adding one!</i>
           : undefined}
       </div>

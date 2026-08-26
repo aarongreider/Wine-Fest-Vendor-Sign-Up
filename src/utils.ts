@@ -23,7 +23,7 @@ export const fetchWineData = async (): Promise<Bottle[]> => {
 export const getActiveBooth = (booths: Booth[], activeBoothName: string | undefined) => {
     const match = booths.find((booth) => booth.name === activeBoothName)
     if (!match) {
-        return {} as Booth
+        return undefined
     }
     return match
 }
