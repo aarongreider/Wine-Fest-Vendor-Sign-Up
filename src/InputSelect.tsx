@@ -21,18 +21,19 @@ export default function InputSelect({ label, items, _key, initialValue, readOnly
     );
     const filteredValues = [...new Set(filteredItems.map((item) => String(item[_key])))];
 
-    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleQueryPush = (e: React.MouseEvent<HTMLButtonElement> | React.ChangeEvent, _focused = false) => {
+        //@ts-ignore
         handleChange(e)
         //@ts-ignore
         setSearchQuery(e.target.value)
-        setFocused(false)
+        setFocused(_focused)
     }
 
     return <>
         <div className="InputSelect">
             <label htmlFor="select">{label}:</label>
             <input value={searchQuery} readOnly={readOnly} disabled={readOnly} type="text" 
-                onChange={(event) => setSearchQuery(event.target.value)}
+                onChange={handleQueryPush}
                 onFocus={() => setFocused(true)}
             />
             <div className="select-container" style={{display:`${focused ? 'flex' : 'none'}`}}>
@@ -40,7 +41,7 @@ export default function InputSelect({ label, items, _key, initialValue, readOnly
                     filteredItems.length > 0
                         ? filteredValues.map((value) =>
                             <button key={value} value={value}
-                                onClick={handleClick}>
+                                onClick={handleQueryPush}>
                                 {value}
                             </button>)
                         : <i>loading...</i>

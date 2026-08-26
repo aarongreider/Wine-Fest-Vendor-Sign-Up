@@ -4,6 +4,7 @@ import { fetchWineData, getActiveBooth, getValueByKey, groupBooths, groupDistrib
 import { Booth, Bottle, Edit, EditTypes, Region } from './types.ts';
 import Tag from './Tag.tsx';
 import InputSelect from './InputSelect.tsx';
+import NewBottleForm from './NewBottleForm.tsx';
 
 
 function App() {
@@ -13,9 +14,11 @@ function App() {
   const [booths, setBooths] = useState<Booth[]>([])
   const [bottles, setBottles] = useState<Bottle[]>([])
   const [activeBoothName, setActiveBoothName] = useState<string>()
+  const [activeBooth, setActiveBooth] = useState<Booth>()
   const [regions, setRegions] = useState<Region[]>([])
   const formRef = useRef<HTMLFormElement>(null)
   const addButtonRef = useRef<HTMLInputElement>(null)
+  const [addingBottle, setAddingBottle] = useState<Boolean>(false)
 
   useEffect(() => {  // fetch the initial data and set the state 
     const fetchData = async () => {
@@ -72,7 +75,18 @@ function App() {
     ))
   }
 
+  const startAddBottle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    //const target = e.target as HTMLButtonElement
+    if (!activeBooth) {
+      alert("Please select a booth first")
+      return
+    }
+    setAddingBottle(true)
+  }
+
   const addBottle = (item: Bottle) => {
+    setAddingBottle(false)
     console.log("adding item, ", item['Wine Name / Type'], item['Booth Name'])
     if (!activeBoothName) return
 
@@ -161,7 +175,13 @@ function App() {
     setBooths(groupBooths(bottles))
   }, [bottles])
 
-  const activeBooth = getActiveBooth(booths, activeBoothName)
+  useEffect(() => {
+    console.log("setting active booth")
+    if (!activeBoothName) return
+    const booth = getActiveBooth(booths, activeBoothName)
+    console.log(booth)
+    setActiveBooth(booth)
+  })
 
   return <>
     <form action="" onSubmit={handleSubmit} ref={formRef}>
@@ -186,6 +206,8 @@ function App() {
 
       <InputSelect label="Select a Booth" items={booths} _key="name" handleChange={handleBoothSelect} />
 
+      <button style={{ textWrap: 'nowrap' }} onClick={startAddBottle}>+ Add a Wine</button>
+      {addingBottle && activeBooth ? <NewBottleForm bottles={bottles} activeBooth={activeBooth} addBottle={addBottle} /> : undefined}
       {/* <div className="flex column">
         <div className="flex">
           <label htmlFor="distributor_name">Distributor Name:&nbsp;&nbsp;</label>
