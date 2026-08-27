@@ -10,6 +10,7 @@ import NewBottleForm from './NewBottleForm.tsx';
 function App() {
   const [formState, setFormState] = useState({})
   const [loading, setLoading] = useState<boolean>(true)
+  const [dirtyItem, setDirtyItem] = useState<Record<string, boolean>>({})
   const [changeLog, setChangeLog] = useState<Map<string, Edit>>(new Map())
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [booths, setBooths] = useState<Booth[]>([])
@@ -57,7 +58,7 @@ function App() {
     setFormState({})
   }
 
-  const handleBoothSelect = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleBoothSelect = (e: React.MouseEvent<HTMLButtonElement> | React.ChangeEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>) => {
     e.preventDefault()
     const target = e.target as HTMLButtonElement
     let boothMatch: Booth | undefined = booths.find((booth) => booth.name == target.value)
@@ -186,6 +187,12 @@ function App() {
     }
   }
 
+  const handleSetDirtyItem = (wine: Record<string, boolean>) => {
+    setDirtyItem((currentDirtyItems) => ({ ...currentDirtyItems, ...wine }))
+  }
+
+  const dirtyCount = Object.values(dirtyItem).filter(Boolean).length
+
   useEffect(() => {
     console.log(JSON.stringify(Object.fromEntries(changeLog)))
   }, [changeLog])
@@ -203,6 +210,13 @@ function App() {
   useEffect(() => {
     setAddingBottle(false)
   }, [activeBoothName])
+
+  useEffect(()=> {
+console.log("dirty?", dirtyItem, dirtyCount)
+
+  }, [dirtyItem])
+
+  
 
   return <>
     <form action="" onSubmit={handleSubmit} ref={formRef}>
@@ -224,8 +238,10 @@ function App() {
         <input type="email" name="email" id="email" required onChange={handleChangeSimple} />
       </div>
 
-
-      <InputSelect label="Select a Booth" items={booths} _key="name" loading={loading} handleChange={handleBoothSelect} handleAdd={addPlaceholderBooth} />
+      <div>
+        <InputSelect label="Select a Booth" items={booths} _key="name" loading={loading} readOnly={dirtyCount > 0} handleChange={handleBoothSelect} handleAdd={addPlaceholderBooth} />
+        {dirtyCount ? <i>Please save your changes before editing another booth.</i> : undefined}
+      </div>
 
       {activeBoothName && <div className="flex column" style={{gap: 0}}>
         <hr style={{ width: '100%', marginTop: "30px" }} />
@@ -234,53 +250,15 @@ function App() {
       </div>}
       <button style={{ textWrap: 'nowrap' }} onClick={startAddBottle}>+ Add a Wine</button>
       {addingBottle && activeBooth ? <NewBottleForm bottles={bottles} activeBooth={activeBooth} loading={loading} addBottle={addBottle} /> : undefined}
-      {/* <div className="flex column">
-        <div className="flex">
-          <label htmlFor="distributor_name">Distributor Name:&nbsp;&nbsp;</label>
-          <input type="distributor_name" name="distributor_name" id="distributor_name" required onChange={handleChangeSimple} />
-        </div>
-        <div className="flex">
-          <label htmlFor="distributor_phone">Distributor Phone:&nbsp;&nbsp;</label>
-          <input type="distributor_phone" name="distributor_phone" id="distributor_phone" required onChange={handleChangeSimple} />
-        </div>
-        <div className="flex">
-          <label htmlFor="distributor_email">Distributor Email:&nbsp;&nbsp;</label>
-          <input type="distributor_email" name="distributor_email" id="distributor_email" required onChange={handleChangeSimple} />
-        </div>
-      </div>
-
-      <div className="flex column">
-        <div className="flex">
-          <label htmlFor="winery_name">Winery Name:&nbsp;&nbsp;</label>
-          <input type="winery_name" name="winery_name" id="winery_name" required onChange={handleChangeSimple} />
-        </div>
-        <div className="flex">
-          <label htmlFor="winery_phone">Winery Phone:&nbsp;&nbsp;</label>
-          <input type="winery_phone" name="winery_phone" id="winery_phone" required onChange={handleChangeSimple} />
-        </div>
-        <div className="flex">
-          <label htmlFor="winery_email">Winery Email:&nbsp;&nbsp;</label>
-          <input type="winery_email" name="winery_email" id="winery_email" required onChange={handleChangeSimple} />
-        </div>
-      </div> */}
-
-      {/* <div className="flex">
-        <label htmlFor="booth_name">Booth Name:&nbsp;&nbsp;</label>
-        <input type="booth_name" name="booth_name" id="booth_name" required onChange={handleChangeSimple} />
-      </div> */}
-
 
       <div style={{ display: 'flex', flexDirection: "column", gap: "8px", flexWrap: 'wrap', marginBottom: '20px', maxWidth: "100%", overflow: "scroll" }}>
         {activeBooth ?
           activeBooth.bottles.length > 0
-            ? activeBooth.bottles.map((bottle, index) => <Tag key={`${bottle}-${index}`} item={bottle} bottles={bottles} loading={loading} deleteBottle={deleteBottle} editBottle={changeBottle} />)
+            ? activeBooth.bottles.map((bottle) => <Tag key={String(bottle["Wine ID"])} item={bottle} bottles={bottles} loading={loading} deleteBottle={deleteBottle} editBottle={changeBottle} setDirtyItem={handleSetDirtyItem} />)
             : <i>No wines here–Try adding one!</i>
           : undefined}
       </div>
 
-      {/* <label htmlFor="ProductInput">Add a new wine:&nbsp;&nbsp;</label>
-      <input name="ProductInput" type='text' placeholder="Sauce Name" onKeyDown={(e) => e.key == "Enter" ? handleAddProduct(e) : undefined} ref={addButtonRef}></input><button type="button" style={{ textWrap: 'nowrap' }} onClick={handleAddProduct}>Add +</button>
- */}
       <button type='submit' value="Submit">Submit</button>
       {isSubmitted ? <p>Your response has been recorded. Thank you for making our 2026 International Wine Festival possible!</p> : undefined}
     </form>

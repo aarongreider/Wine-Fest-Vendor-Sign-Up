@@ -13,13 +13,14 @@ export interface FormItem {
     label?: string
     key: keyof Bottle
     value: string
+    strictValidation?: boolean
 }
 
 enum AutoFillField { YES = "YES", NO = "NO" }
 
 export default function BottleForm({ item, bottles, loading, readOnly = false, handleChange }: Props) {
-    const fields: Array<{ label: string, key: keyof Bottle, formItems?: FormItem[] }> = [
-        { label: "region", key: "What country or region is this wine from?" },
+    const fields: Array<{ label: string, key: keyof Bottle, formItems?: FormItem[], strictValidation?: boolean }> = [
+        { label: "region", key: "What country or region is this wine from?", strictValidation: true },
         {
             label: "winery", key: "Winery Name", formItems: [
                 { label: "Winery Name", key: "Winery Name", value: AutoFillField.YES },
@@ -55,7 +56,7 @@ export default function BottleForm({ item, bottles, loading, readOnly = false, h
     } */
 
     return <>
-        {fields.map(({ label, key, formItems }) =>
+        {fields.map(({ label, key, formItems, strictValidation }) =>
             <InputSelect
                 key={`${item["Wine ID"]}-${label}`}
                 label={label}
@@ -64,6 +65,7 @@ export default function BottleForm({ item, bottles, loading, readOnly = false, h
                 loading={loading}
                 initialValue={String(item[key])}
                 readOnly={readOnly}
+                strictValidation={strictValidation ?? undefined}
                 handleChange={(event) => handleChange(key, event.currentTarget.value)}
                 handleAdd={formItems ? (event) => {
                     const name = event.currentTarget.closest(".InputSelect")?.querySelector("input")?.value ?? ""

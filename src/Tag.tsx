@@ -8,9 +8,10 @@ interface props {
     loading: boolean,
     deleteBottle: (item: Bottle) => void
     editBottle: (item: Bottle) => void
+    setDirtyItem: (dirty: Record<string, boolean>) => void
 }
 
-export default function Tag({ item, bottles, loading, deleteBottle, editBottle }: props) {
+export default function Tag({ item, bottles, loading, deleteBottle, editBottle, setDirtyItem }: props) {
     const [toggled, setToggled] = useState<boolean>(false)
     const [editing, setEditing] = useState<boolean>(false)
     const [draftItem, setDraftItem] = useState<Bottle>(item)
@@ -22,15 +23,26 @@ export default function Tag({ item, bottles, loading, deleteBottle, editBottle }
 
     const toggle = () => {
         setToggled(!toggled)
+        editBottle(draftItem)
+    }
+
+    const handleDeleteBottle = () => {
+        setEditing(false)
+        deleteBottle(item)
     }
 
     useEffect(() => {
         //console.log(draftItem)
+        //editBottle(draftItem)
     }, [draftItem])
 
     useEffect(() => {
         setDraftItem(item)
     }, [item["Wine ID"]])
+
+    useEffect(()=>{
+        setDirtyItem({[`${item["Wine ID"]}`]: editing})
+    }, [editing])
 
     return (
         <>
@@ -50,7 +62,7 @@ export default function Tag({ item, bottles, loading, deleteBottle, editBottle }
                         readOnly={!editing}
                         handleChange={handleBottleChange}
                     />
-                    <u onClick={() => deleteBottle(item)}>Delete Wine</u>
+                    <u onClick={handleDeleteBottle}>Delete Wine</u>
                     {editing
                         ? <u onClick={() => { editBottle(draftItem); setEditing(false) }}>Save Changes to Wine</u>
                         : <u onClick={() => { setEditing(true) }}>Edit Wine</u>
