@@ -65,7 +65,7 @@ function App() {
     boothMatch != undefined ? setActiveBoothName(boothMatch.name) : undefined
   }
 
-  const addPlaceholderBooth = (name: string) => {
+  const addPlaceholderBooth = (e: React.MouseEvent<HTMLButtonElement>, name: string) => {
     const boothName = name.trim()
     if (!boothName) return
 
@@ -191,15 +191,12 @@ function App() {
   }, [changeLog])
 
   useEffect(() => {
-    console.log(bottles)
     setBooths(groupBooths(bottles))
   }, [bottles])
 
   useEffect(() => {
-    console.log("setting active booth")
     if (!activeBoothName) return
     const booth = getActiveBooth(booths, activeBoothName)
-    console.log(booth)
     setActiveBooth(booth)
   })
 

@@ -86,4 +86,10 @@ form {
 }
 .InputSelect button {
   text-wrap: nowrap;
+}
+
+.modal {
+  position: fixed;
+  z-index: 10;
+  width: 50vw;
 }/*# sourceMappingURL=App.css.map */

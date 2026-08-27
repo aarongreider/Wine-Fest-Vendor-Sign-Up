@@ -8,7 +8,7 @@ interface props {
     initialValue?: string
     readOnly?: boolean
     handleChange: (e: React.MouseEvent<HTMLButtonElement>) => void
-    handleAdd?: (value: string) => void
+    handleAdd?: (e: React.MouseEvent<HTMLButtonElement>, value: string) => void
 }
 
 const cleanString = (value: string) =>
@@ -34,8 +34,8 @@ export default function InputSelect({ label, items, _key, loading, initialValue,
         setFocused(_focused)
     }
 
-    const handleAddClick = () => {
-        handleAdd?.(searchQuery.trim())
+    const handleAddClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+        handleAdd?.(e, searchQuery.trim())
         setFocused(false)
     }
 

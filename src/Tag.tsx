@@ -15,10 +15,8 @@ export default function Tag({ item, bottles, loading, deleteBottle, editBottle }
     const [editing, setEditing] = useState<boolean>(false)
     const [draftItem, setDraftItem] = useState<Bottle>(item)
 
-    const handleEdit = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // Handle edit logic here
-    }
     const handleBottleChange = (key: keyof Bottle, value: string) => {
+        console.log("handling bottle change", key, value)
         setDraftItem((currentDraft) => ({ ...currentDraft, [key]: value }))
     }
 
@@ -27,8 +25,12 @@ export default function Tag({ item, bottles, loading, deleteBottle, editBottle }
     }
 
     useEffect(() => {
-        console.log(draftItem)
+        //console.log(draftItem)
     }, [draftItem])
+
+    useEffect(() => {
+        setDraftItem(item)
+    }, [item["Wine ID"]])
 
     return (
         <>

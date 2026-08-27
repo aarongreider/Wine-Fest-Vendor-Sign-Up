@@ -70,6 +70,6 @@ export default function NewBottleForm({ bottles, activeBooth, loading, addBottle
             handleChange={handleBottleChange}
         />
 
-        <button onClick={handleSubmit}>Add Wine</button>
+        <button onClick={handleSubmit} style={{textWrap: 'nowrap'}}>Add New Wine:  '{draftItem["Wine Name / Type"]}'</button>
     </>
 }
