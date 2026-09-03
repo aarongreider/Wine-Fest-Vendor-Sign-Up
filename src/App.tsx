@@ -21,22 +21,22 @@ function App() {
   const [addingBottle, setAddingBottle] = useState<Boolean>(false)
 
   useEffect(() => {  // fetch the initial data and set the state 
-    const fetchData = async () => {
-      try {
-        //console.log("Fetching data");
-        const _bottles: Bottle[] = await fetchWineData();
-        const _booths: Booth[] = groupBooths(_bottles);
-        //const _regions: Region[] = groupRegions(_booths);
-        setBooths(_booths);
-        setBottles(_bottles);
-        setLoading(false)
-      } catch {
-        console.log("Error fetching data in useEffect");
-      }
-    };
-
     fetchData();
   }, [])
+
+  const fetchData = async () => {
+    try {
+      //console.log("Fetching data");
+      const _bottles: Bottle[] = await fetchWineData();
+      const _booths: Booth[] = groupBooths(_bottles);
+      //const _regions: Region[] = groupRegions(_booths);
+      setBooths(_booths);
+      setBottles(_bottles);
+      setLoading(false)
+    } catch {
+      console.log("Error fetching data in useEffect");
+    }
+  };
 
   const handleChangeSimple = (e: any) => {
     console.log("change", e.target.name, e.target.value)
@@ -54,6 +54,9 @@ function App() {
     }
     formRef.current?.reset()
     setFormState({})
+    setChangeLog(new Map())
+    setBottles([])
+    fetchData()
   }
 
   const handleBoothSelect = (e: React.MouseEvent<HTMLButtonElement> | React.ChangeEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>) => {
@@ -149,13 +152,14 @@ function App() {
 
   const postForm = async () => {
     try {
-      const response = await fetch("https://script.google.com/macros/s/AKfycby0NfF1QI2eICYik9viJqiICdFdPwMrL-IxpjHD8FWYaK1LwHuUpTSAz93oVOGn3qSRcQ/exec",
+      const response = await fetch("https://script.google.com/macros/s/AKfycbx0uNsq4rhJUt-eH2cq5m6LvQm1qS8wXnk9AwvW4vHJgXTbqwrD1UoCLGsWwqpGc1Ieow/exec",
         {
           redirect: "follow",
           method: "POST",
           body: JSON.stringify({
             action: "formSubmit",
-            formData: formState
+            formData: formState,
+            changeLog: Object.fromEntries(changeLog)
           }),
           headers: {
             'Content-Type': 'text/plain;charset=utf-8',
@@ -210,12 +214,13 @@ function App() {
     setAddingBottle(false)
   }, [activeBoothName])
 
-  useEffect(()=> {
-console.log("dirty?", dirtyItem, dirtyCount)
+  useEffect(() => {
+    console.log("dirty?", dirtyItem, dirtyCount)
+    setIsSubmitted(false)
 
   }, [dirtyItem])
 
-  
+
 
   return <>
     <form action="" onSubmit={handleSubmit} ref={formRef}>
@@ -234,7 +239,7 @@ console.log("dirty?", dirtyItem, dirtyCount)
 
       <div>
         <label htmlFor="email">Email:&nbsp;&nbsp;</label>
-        <input type="email" name="email" id="email" required onChange={handleChangeSimple} />
+        <input type="email" name="email" id="email" required onInput={handleChangeSimple} />
       </div>
 
       <div>
@@ -242,7 +247,7 @@ console.log("dirty?", dirtyItem, dirtyCount)
         {dirtyCount ? <i>Please save your changes before editing another booth.</i> : undefined}
       </div>
 
-      {activeBoothName && <div className="flex column" style={{gap: 0}}>
+      {activeBoothName && <div className="flex column" style={{ gap: 0 }}>
         <hr style={{ width: '100%', marginTop: "30px" }} />
         <i>Currently Editing</i>
         <h3 style={{ padding: 0, margin: 0 }}>{activeBoothName}</h3>

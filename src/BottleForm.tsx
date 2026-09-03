@@ -45,15 +45,9 @@ export default function BottleForm({ item, bottles, loading, readOnly = false, h
                 return
             }
             console.log(response)
-            handleChange(item.key, response)
+            
         }
     }
-
-    /* const handleAddDistributor = (distributorName: string) => {
-        return <>
-            <DialogModal name={distributorName} email={""} onClose={() => {handleChange() }} />
-        </>
-    } */
 
     return <>
         {fields.map(({ label, key, formItems, strictValidation }) =>
@@ -73,17 +67,15 @@ export default function BottleForm({ item, bottles, loading, readOnly = false, h
                 } : undefined}
             />
         )}
-
-        {/* <InputSelect
-            key={`${item["Wine ID"]}-distributor`}
-            label={"distributor"}
-            items={bottles}
-            _key={"Distributor Name"}
-            loading={loading}
-            initialValue={String(item["Distributor Name"])}
-            readOnly={readOnly}
-            handleChange={(event) => handleChange("Distributor Name", event.currentTarget.value)}
-            handleAdd={() => handleAddDistributor(item["Distributor Name"])}
-        /> */}
+        <div className="InputSelect">
+            <label htmlFor="price">price: </label>
+            <input
+                id="price"
+                type="number"
+                readOnly={readOnly} disabled={readOnly}
+                value={item["Wine Price"]}
+                onChange={(e) => {handleChange("Wine Price", e.target.value)}}>
+            </input>
+        </div>
     </>
 }

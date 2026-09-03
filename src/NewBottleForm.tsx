@@ -41,10 +41,11 @@ export default function NewBottleForm({ bottles, activeBooth, loading, addBottle
             draftItem["Distributor Name"],
             draftItem["Wine Name / Type"],
             draftItem["What country or region is this wine from?"],
+            draftItem["Wine Price"],
         ]
 
-        if (requiredFields.some((field) => field.trim() === "")) {
-            alert("Please provide a winery, distributor, wine name, and region.")
+        if (requiredFields.some((field) => `${field}`.trim() === "")) {
+            alert("Please provide a wine name, region, winery, distributor, and price.")
             return
         }
 
