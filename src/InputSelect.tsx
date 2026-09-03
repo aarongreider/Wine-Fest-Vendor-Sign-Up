@@ -61,7 +61,7 @@ export default function InputSelect({ label, items, _key, loading, initialValue,
                 onFocus={() => setFocused(true)}
                 onBlur={handleBlur}
             />
-            {handleAdd && searchQuery.trim() && !hasRoughMatch &&
+            {handleAdd && searchQuery.trim() && !hasRoughMatch && focused &&
                 <div style={{ width: '100%', padding: "10px 0" }}>
                     <button type="button" onClick={handleAddClick} style={{ background: "#676767", color: "white", padding: '10px' }}>
                         + Add new {label} &quot;{searchQuery.trim()}&quot;

@@ -1,7 +1,7 @@
-import React, { RefObject, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import "./App.css"
-import { fetchWineData, getActiveBooth, getValueByKey, groupBooths, groupDistributors, groupRegions } from './utils.ts';
-import { Booth, Bottle, Edit, EditTypes, Region } from './types.ts';
+import { fetchWineData, getActiveBooth, groupBooths } from './utils.ts';
+import { Booth, Bottle, Edit, EditTypes } from './types.ts';
 import Tag from './Tag.tsx';
 import InputSelect from './InputSelect.tsx';
 import NewBottleForm from './NewBottleForm.tsx';
@@ -17,9 +17,7 @@ function App() {
   const [bottles, setBottles] = useState<Bottle[]>([])
   const [activeBoothName, setActiveBoothName] = useState<string>()
   const [activeBooth, setActiveBooth] = useState<Booth>()
-  const [regions, setRegions] = useState<Region[]>([])
   const formRef = useRef<HTMLFormElement>(null)
-  const addButtonRef = useRef<HTMLInputElement>(null)
   const [addingBottle, setAddingBottle] = useState<Boolean>(false)
 
   useEffect(() => {  // fetch the initial data and set the state 
@@ -67,6 +65,7 @@ function App() {
   }
 
   const addPlaceholderBooth = (e: React.MouseEvent<HTMLButtonElement>, name: string) => {
+    e;
     const boothName = name.trim()
     if (!boothName) return
 

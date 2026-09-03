@@ -2,8 +2,6 @@
 import { nanoid } from 'nanoid';
 import { Booth, Bottle } from "../types";
 import BottleLayout from './BottleLayout';
-import QRCode from 'qrcode'
-import { useEffect, useState } from 'react';
 
 
 interface props {
