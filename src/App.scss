@@ -27,11 +27,8 @@ form {
     display: flex;
     align-items: center;
     gap: 3px;
+    row-gap: 3px;
     flex-wrap: nowrap;
-
-    &.row {
-        flex-direction: row;
-    }
 
     &.start {
         justify-content: flex-start;
@@ -42,10 +39,23 @@ form {
         align-items: flex-start;
     }
 
+    &.row {
+        flex-direction: row;
+    }
+
     label {
         text-wrap: nowrap;
     }
 
+}
+
+.card {
+    background: #c7c7c7;
+    padding: 12px;
+    border-radius: 20px;
+    gap: 6px;
+    box-sizing: border-box;
+    margin: 12px 0
 }
 
 
@@ -66,7 +76,7 @@ form {
         align-items: center;
         justify-content: space-between;
         gap: 10px;
-        
+
         width: 100%;
         padding: 6px 0;
         box-sizing: border-box;

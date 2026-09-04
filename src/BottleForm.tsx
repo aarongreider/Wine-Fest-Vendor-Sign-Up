@@ -14,13 +14,15 @@ export interface FormItem {
     key: keyof Bottle
     value: string
     strictValidation?: boolean
+    requireQuery?: boolean
 }
 
 enum AutoFillField { YES = "YES", NO = "NO" }
 
 export default function BottleForm({ item, bottles, loading, readOnly = false, handleChange }: Props) {
-    const fields: Array<{ label: string, key: keyof Bottle, formItems?: FormItem[], strictValidation?: boolean }> = [
-        { label: "Region", key: "What country or region is this wine from?", strictValidation: true },
+    const formId = `bottle-${String(item["Wine ID"]).replace(/[^a-zA-Z0-9_-]/g, "-")}`
+    const fields: Array<{ label: string, key: keyof Bottle, formItems?: FormItem[], strictValidation?: boolean, requireQuery?: boolean }> = [
+        { label: "Region", key: "What country or region is this wine from?", strictValidation: true, requireQuery: false },
         {
             label: "Winery", key: "Winery Name", formItems: [
                 { label: "Winery Name", key: "Winery Name", value: AutoFillField.YES },
@@ -48,21 +50,23 @@ export default function BottleForm({ item, bottles, loading, readOnly = false, h
             }
             handleChange(item.key, response)
             console.log(response)
-            
+
         }
     }
 
     return <>
-        {fields.map(({ label, key, formItems, strictValidation }) =>
+        {fields.map(({ label, key, formItems, strictValidation, requireQuery }) =>
             <InputSelect
                 key={`${item["Wine ID"]}-${label}`}
                 label={label}
+                id={`${formId}-${label.toLowerCase()}`}
                 items={bottles}
                 _key={key}
                 loading={loading}
                 initialValue={String(item[key])}
                 readOnly={readOnly}
                 strictValidation={strictValidation ?? undefined}
+                requireQuery={requireQuery ?? undefined}
                 handleChange={(event) => handleChange(key, event.currentTarget.value)}
                 handleAdd={formItems ? (event, _name, clear) => {
                     const name = event.currentTarget.closest(".InputSelect")?.querySelector("input")?.value ?? ""
@@ -71,23 +75,23 @@ export default function BottleForm({ item, bottles, loading, readOnly = false, h
             />
         )}
         <div className="InputSelect">
-            <label htmlFor="price">price: </label>
+            <label htmlFor={`${formId}-price`}>price: </label>
             <input
-                id="price"
+                id={`${formId}-price`}
                 type="number"
                 readOnly={readOnly} disabled={readOnly}
                 value={item["Wine Price"]}
-                onChange={(e) => {handleChange("Wine Price", e.target.value)}}>
+                onChange={(e) => { handleChange("Wine Price", e.target.value) }}>
             </input>
         </div>
         <div className="InputSelect">
-            <label htmlFor="VIP">VIP Wine? </label>
+            <label htmlFor={`${formId}-vip`}>VIP Wine? </label>
             <input
-                id="VIP"
+                id={`${formId}-vip`}
                 type="checkbox"
                 readOnly={readOnly} disabled={readOnly}
                 checked={item["Is this a connoisseur/VIP wine?"] === "Yes"}
-                onChange={(e) => {handleChange("Is this a connoisseur/VIP wine?", e.target.checked ? "Yes" : "No")}}>
+                onChange={(e) => { handleChange("Is this a connoisseur/VIP wine?", e.target.checked ? "Yes" : "No") }}>
             </input>
         </div>
     </>

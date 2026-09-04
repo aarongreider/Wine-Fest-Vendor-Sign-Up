@@ -23,7 +23,7 @@ export default function Tag({ item, bottles, loading, deleteBottle, editBottle, 
 
     const toggle = () => {
         setToggled(!toggled)
-        editBottle(draftItem)
+        //editBottle(draftItem)
     }
 
     const handleDeleteBottle = () => {
@@ -40,8 +40,8 @@ export default function Tag({ item, bottles, loading, deleteBottle, editBottle, 
         setDraftItem(item)
     }, [item["Wine ID"]])
 
-    useEffect(()=>{
-        setDirtyItem({[`${item["Wine ID"]}`]: editing})
+    useEffect(() => {
+        setDirtyItem({ [`${item["Wine ID"]}`]: editing })
     }, [editing])
 
     return (
@@ -62,8 +62,16 @@ export default function Tag({ item, bottles, loading, deleteBottle, editBottle, 
                         readOnly={!editing}
                         handleChange={handleBottleChange}
                     />
-                    {item["Winery Name"]}<br />{item["Winery Email"]}<br />{item["Winery Phone #"]}<br />
-                    {item["Distributor Name"]}<br />{item["Distributor Email"]}<br />{item["Distributor Phone #"]}<br />
+                    
+                    <div className="flex column" style={{fontSize: '14px', lineHeight: '1', color: "grey", alignItems: "flex-end", alignSelf: "flex-end", textAlign: "right"}}>
+                        <p>{item["Winery Name"]}</p>
+                        <p>{item["Winery Email"]}</p>
+                        <p>{item["Winery Phone #"]}</p>
+                        <p>{item["Distributor Name"]}</p>
+                        <p>{item["Distributor Email"]}</p>
+                        <p>{item["Distributor Phone #"]}</p>
+                    </div>
+
                     <u onClick={handleDeleteBottle}>Delete Wine</u>
                     {editing
                         ? <u onClick={() => { editBottle(draftItem); setEditing(false) }}>Save Changes to Wine</u>

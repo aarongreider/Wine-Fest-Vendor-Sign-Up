@@ -60,17 +60,18 @@ export default function NewBottleForm({ bottles, activeBooth, loading, addBottle
         setDraftItem({ ...draftItem, [`${key}`]: e.target.value })
     }
     return <>
-        <div className="flex">
-            <label htmlFor="wineNameNew">Wine Name or Type</label>
-            <input type="text" id="wineNameNew" onChange={(e) => handleInputChange(e, "Wine Name / Type")}></input>
+        <div className="flex column card">
+            <div className="InputSelect">
+                <label htmlFor="wineNameNew">Wine Name or Type:</label>
+                <input type="text" id="wineNameNew" onChange={(e) => handleInputChange(e, "Wine Name / Type")}></input>
+            </div>
+            <BottleForm
+                item={draftItem}
+                bottles={bottles}
+                loading={loading}
+                handleChange={handleBottleChange}
+            />
+            <button onClick={handleSubmit} style={{ textWrap: 'nowrap' }}>Add New Wine:  <b>{draftItem["Wine Name / Type"]}</b></button>
         </div>
-        <BottleForm
-            item={draftItem}
-            bottles={bottles}
-            loading={loading}
-            handleChange={handleBottleChange}
-        />
-
-        <button onClick={handleSubmit} style={{textWrap: 'nowrap'}}>Add New Wine:  '{draftItem["Wine Name / Type"]}'</button>
     </>
 }

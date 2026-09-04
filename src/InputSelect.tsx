@@ -2,13 +2,14 @@ import { useState } from 'react';
 
 interface props {
     label: string,
+    id: string,
     items: Record<string, unknown>[],
     _key: string
     loading: boolean
     initialValue?: string
     readOnly?: boolean
     strictValidation?: boolean
-    requireInput?: boolean
+    requireQuery?: boolean
     handleChange: (e: React.MouseEvent<HTMLButtonElement> | React.ChangeEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>) => void
     handleAdd?: (e: React.MouseEvent<HTMLButtonElement>, value: string, clear: () => void) => void
 }
@@ -17,7 +18,7 @@ const cleanString = (value: string) =>
     value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
 
 /* combo input and select button, the input filters the list of items */
-export default function InputSelect({ label, items, _key, loading, initialValue, readOnly = false, strictValidation = false, requireInput = true, handleChange, handleAdd }: props) {
+export default function InputSelect({ label, id, items, _key, loading, initialValue, readOnly = false, strictValidation = true, requireQuery = true, handleChange, handleAdd }: props) {
     const [searchQuery, setSearchQuery] = useState(initialValue || '');
     const [focused, setFocused] = useState<boolean>(false);
     const filteredItems = items.filter((item) =>
@@ -46,7 +47,7 @@ export default function InputSelect({ label, items, _key, loading, initialValue,
         if (e.currentTarget.parentElement?.contains(e.relatedTarget as Node)) return
 
         if (strictValidation && searchQuery.trim() && !hasExactMatch) {
-            alert(`Invalid ${label}. Please select a suggested value.`)
+            alert(`Invalid ${label}. Please select a suggested value or add a new ${label.toLowerCase()}.`)
             e.currentTarget.value = ''
             setSearchQuery('')
             handleChange(e)
@@ -56,9 +57,8 @@ export default function InputSelect({ label, items, _key, loading, initialValue,
 
     return <>
         <div className="InputSelect">
-            <div className='flex row'>
-                <label htmlFor="select">{label}:</label>
-                <input value={searchQuery} readOnly={readOnly} disabled={readOnly} type="text"
+                <label htmlFor={id}>{label}:</label>
+                <input name={id} id={id} value={searchQuery} readOnly={readOnly} disabled={readOnly} type="text" autoComplete="off"
                     onChange={(e) => handleQueryPush(e, true)}
                     onFocus={() => setFocused(true)}
                     onBlur={handleBlur}
@@ -67,7 +67,7 @@ export default function InputSelect({ label, items, _key, loading, initialValue,
                     <button type="button" onClick={handleAddClick} style={{ background: "#676767", color: "white", }}>
                         + Add New {label} &quot;{searchQuery.trim()}&quot;
                     </button> } */}
-            </div>
+           
             {handleAdd && searchQuery.trim() && !hasRoughMatch && focused &&
                     <div style={{ width: '100%', padding: "10px 0" }}>
                         <button type="button" onClick={handleAddClick} style={{ background: "#676767", color: "white", padding: '5px' }}>
@@ -75,7 +75,7 @@ export default function InputSelect({ label, items, _key, loading, initialValue,
                         </button>
                     </div>}
             <div className="select-container" style={{ display: `${focused ? 'flex' : 'none'}` }}>
-                {focused && (requireInput && searchQuery.trim()) && !readOnly && (!hasExactMatch || filteredValues.length > 1) ?
+                {focused && (!requireQuery || Boolean(searchQuery.trim())) && !readOnly && (!hasExactMatch || filteredValues.length > 1) ?
                     <>
                         {filteredValues.map((value) =>
                             <button key={value} value={value}

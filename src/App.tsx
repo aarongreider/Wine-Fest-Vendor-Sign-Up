@@ -5,12 +5,14 @@ import { Booth, Bottle, Edit, EditTypes } from './types.ts';
 import Tag from './Tag.tsx';
 import InputSelect from './InputSelect.tsx';
 import NewBottleForm from './NewBottleForm.tsx';
+import WarningWidget from './WarningWidget.tsx';
 
 
 function App() {
   const [formState, setFormState] = useState({})
   const [loading, setLoading] = useState<boolean>(true)
   const [dirtyItem, setDirtyItem] = useState<Record<string, boolean>>({})
+  const [dirtyCount, setDirtyCount] = useState(0)
   const [changeLog, setChangeLog] = useState<Map<string, Edit>>(new Map())
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [booths, setBooths] = useState<Booth[]>([])
@@ -194,8 +196,6 @@ function App() {
     setDirtyItem((currentDirtyItems) => ({ ...currentDirtyItems, ...wine }))
   }
 
-  const dirtyCount = Object.values(dirtyItem).filter(Boolean).length
-
   useEffect(() => {
     console.log(JSON.stringify(Object.fromEntries(changeLog)))
   }, [changeLog])
@@ -216,21 +216,25 @@ function App() {
 
   useEffect(() => {
     console.log("dirty?", dirtyItem, dirtyCount)
+    setDirtyCount(Object.values(dirtyItem).filter(Boolean).length)
     setIsSubmitted(false)
 
   }, [dirtyItem])
 
   useEffect(() => { // ensure the unsaved changes are tracked 
-    if (!dirtyCount) return
+    if (!dirtyCount && !changeLog) return
 
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       event.preventDefault()
-      event.returnValue = true
     }
 
-    window.addEventListener("beforeunload", handleBeforeUnload)
+    if (dirtyCount > 0 || changeLog.size > 0) {
+      window.addEventListener("beforeunload", handleBeforeUnload)
+    }
+
     return () => window.removeEventListener("beforeunload", handleBeforeUnload)
-  }, [dirtyCount])
+
+  }, [dirtyCount, changeLog])
 
 
 
@@ -242,9 +246,9 @@ function App() {
         <input type="email" name="email" id="email" required onInput={handleChangeSimple} />
       </div>
 
-      <div style={{outline: '1px solid black', padding: '12px', borderRadius: '20px'}}>
+      <div className='flex column card'>
         <b>Add or select your booth</b>
-        <InputSelect label="Booth" items={booths} _key="name" loading={loading} readOnly={dirtyCount > 0} handleChange={handleBoothSelect} handleAdd={addPlaceholderBooth} />
+        <InputSelect id="booth-select" label="Booth" items={booths} _key="name" loading={loading} readOnly={dirtyCount > 0} handleChange={handleBoothSelect} handleAdd={addPlaceholderBooth} />
         {dirtyCount ? <i>Please save your changes before editing another booth.</i> : undefined}
       </div>
 
@@ -253,7 +257,7 @@ function App() {
         <i>Currently Editing</i>
         <h3 style={{ padding: 0, margin: 0 }}>{activeBoothName}</h3>
       </div>}
-      {activeBoothName && <button style={{ textWrap: 'nowrap' }} onClick={startAddBottle} disabled={!activeBooth}>+ Add a Wine</button>}
+      {activeBoothName && !addingBottle && <button style={{ textWrap: 'nowrap' }} onClick={startAddBottle} disabled={!activeBooth}>+ Add a Wine</button>}
       {addingBottle && activeBooth ? <NewBottleForm bottles={bottles} activeBooth={activeBooth} loading={loading} addBottle={addBottle} /> : undefined}
 
       <div style={{ display: 'flex', flexDirection: "column", gap: "8px", flexWrap: 'wrap', marginBottom: '20px', maxWidth: "100%", overflow: "scroll" }}>
@@ -264,7 +268,13 @@ function App() {
           : undefined}
       </div>
 
-      <button type='submit' value="Submit">Submit</button>
+
+        <button type='submit' value="Submit"
+          style={{ background: "rgb(63, 63, 63)", padding: "10px 20px", fontWeight: "bold", fontSize: "18px", color: "white", textWrap: 'nowrap' }}>
+          Submit Changes
+        </button>
+        <WarningWidget dirtyCount={dirtyCount} changeLog={changeLog}></WarningWidget>
+   
       {isSubmitted ? <p>Your response has been recorded. Thank you for making our 2026 International Wine Festival possible!</p> : undefined}
     </form>
   </>
