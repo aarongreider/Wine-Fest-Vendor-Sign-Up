@@ -62,6 +62,8 @@ export default function Tag({ item, bottles, loading, deleteBottle, editBottle, 
                         readOnly={!editing}
                         handleChange={handleBottleChange}
                     />
+                    {item["Winery Name"]}<br />{item["Winery Email"]}<br />{item["Winery Phone #"]}<br />
+                    {item["Distributor Name"]}<br />{item["Distributor Email"]}<br />{item["Distributor Phone #"]}<br />
                     <u onClick={handleDeleteBottle}>Delete Wine</u>
                     {editing
                         ? <u onClick={() => { editBottle(draftItem); setEditing(false) }}>Save Changes to Wine</u>

@@ -8,15 +8,16 @@ interface props {
     initialValue?: string
     readOnly?: boolean
     strictValidation?: boolean
+    requireInput?: boolean
     handleChange: (e: React.MouseEvent<HTMLButtonElement> | React.ChangeEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>) => void
-    handleAdd?: (e: React.MouseEvent<HTMLButtonElement>, value: string) => void
+    handleAdd?: (e: React.MouseEvent<HTMLButtonElement>, value: string, clear: () => void) => void
 }
 
 const cleanString = (value: string) =>
     value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
 
 /* combo input and select button, the input filters the list of items */
-export default function InputSelect({ label, items, _key, loading, initialValue, readOnly = false, strictValidation = false, handleChange, handleAdd }: props) {
+export default function InputSelect({ label, items, _key, loading, initialValue, readOnly = false, strictValidation = false, requireInput = true, handleChange, handleAdd }: props) {
     const [searchQuery, setSearchQuery] = useState(initialValue || '');
     const [focused, setFocused] = useState<boolean>(false);
     const filteredItems = items.filter((item) =>
@@ -37,7 +38,7 @@ export default function InputSelect({ label, items, _key, loading, initialValue,
     }
 
     const handleAddClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-        handleAdd?.(e, searchQuery.trim())
+        handleAdd?.(e, searchQuery.trim(), () => setSearchQuery(''))
         setFocused(false)
     }
 
@@ -55,20 +56,26 @@ export default function InputSelect({ label, items, _key, loading, initialValue,
 
     return <>
         <div className="InputSelect">
-            <label htmlFor="select">{label}:</label>
-            <input value={searchQuery} readOnly={readOnly} disabled={readOnly} type="text"
-                onChange={(e) =>handleQueryPush(e, true)}
-                onFocus={() => setFocused(true)}
-                onBlur={handleBlur}
-            />
+            <div className='flex row'>
+                <label htmlFor="select">{label}:</label>
+                <input value={searchQuery} readOnly={readOnly} disabled={readOnly} type="text"
+                    onChange={(e) => handleQueryPush(e, true)}
+                    onFocus={() => setFocused(true)}
+                    onBlur={handleBlur}
+                />
+                {/* {handleAdd && searchQuery.trim() && !hasRoughMatch && focused &&
+                    <button type="button" onClick={handleAddClick} style={{ background: "#676767", color: "white", }}>
+                        + Add New {label} &quot;{searchQuery.trim()}&quot;
+                    </button> } */}
+            </div>
             {handleAdd && searchQuery.trim() && !hasRoughMatch && focused &&
-                <div style={{ width: '100%', padding: "10px 0" }}>
-                    <button type="button" onClick={handleAddClick} style={{ background: "#676767", color: "white", padding: '10px' }}>
-                        + Add new {label} &quot;{searchQuery.trim()}&quot;
-                    </button>
-                </div>}
+                    <div style={{ width: '100%', padding: "10px 0" }}>
+                        <button type="button" onClick={handleAddClick} style={{ background: "#676767", color: "white", padding: '5px' }}>
+                            + Add New {label} &quot;{searchQuery.trim()}&quot;
+                        </button>
+                    </div>}
             <div className="select-container" style={{ display: `${focused ? 'flex' : 'none'}` }}>
-                {focused && !readOnly && (!hasExactMatch || filteredValues.length > 1) ?
+                {focused && (requireInput && searchQuery.trim()) && !readOnly && (!hasExactMatch || filteredValues.length > 1) ?
                     <>
                         {filteredValues.map((value) =>
                             <button key={value} value={value}

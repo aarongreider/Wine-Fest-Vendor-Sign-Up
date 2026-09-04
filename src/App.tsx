@@ -220,30 +220,31 @@ function App() {
 
   }, [dirtyItem])
 
+  useEffect(() => { // ensure the unsaved changes are tracked 
+    if (!dirtyCount) return
+
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault()
+      event.returnValue = true
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload)
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload)
+  }, [dirtyCount])
+
 
 
   return <>
     <form action="" onSubmit={handleSubmit} ref={formRef}>
-      <div className="flex column">
-        <p>
-          Use this form to add a new winery, new distributor, or a new wine to your booth catalogue.
-          Please submit this form once for each wine in your catalogue.
-        </p>
-        <p>
-          If you realize you need to remove a wine from your wine catalogue, use the form link below to make an official log of them or reach out to TJ Askren at taskren@junglejims.com.
-          If you are simply adding more wines to your catalogue, use this current form.
-        </p>
-        <a href="https://forms.gle/bveAaPM2D44VhCQi9">https://forms.gle/bveAaPM2D44VhCQi9</a>
-        <br />
-      </div>
 
       <div>
         <label htmlFor="email">Email:&nbsp;&nbsp;</label>
         <input type="email" name="email" id="email" required onInput={handleChangeSimple} />
       </div>
 
-      <div>
-        <InputSelect label="Select a Booth" items={booths} _key="name" loading={loading} readOnly={dirtyCount > 0} handleChange={handleBoothSelect} handleAdd={addPlaceholderBooth} />
+      <div style={{outline: '1px solid black', padding: '12px', borderRadius: '20px'}}>
+        <b>Add or select your booth</b>
+        <InputSelect label="Booth" items={booths} _key="name" loading={loading} readOnly={dirtyCount > 0} handleChange={handleBoothSelect} handleAdd={addPlaceholderBooth} />
         {dirtyCount ? <i>Please save your changes before editing another booth.</i> : undefined}
       </div>
 
@@ -252,7 +253,7 @@ function App() {
         <i>Currently Editing</i>
         <h3 style={{ padding: 0, margin: 0 }}>{activeBoothName}</h3>
       </div>}
-      <button style={{ textWrap: 'nowrap' }} onClick={startAddBottle}>+ Add a Wine</button>
+      {activeBoothName && <button style={{ textWrap: 'nowrap' }} onClick={startAddBottle} disabled={!activeBooth}>+ Add a Wine</button>}
       {addingBottle && activeBooth ? <NewBottleForm bottles={bottles} activeBooth={activeBooth} loading={loading} addBottle={addBottle} /> : undefined}
 
       <div style={{ display: 'flex', flexDirection: "column", gap: "8px", flexWrap: 'wrap', marginBottom: '20px', maxWidth: "100%", overflow: "scroll" }}>

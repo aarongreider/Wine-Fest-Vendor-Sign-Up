@@ -29,6 +29,10 @@ form {
     gap: 3px;
     flex-wrap: nowrap;
 
+    &.row {
+        flex-direction: row;
+    }
+
     &.start {
         justify-content: flex-start;
     }
@@ -41,6 +45,7 @@ form {
     label {
         text-wrap: nowrap;
     }
+
 }
 
 
