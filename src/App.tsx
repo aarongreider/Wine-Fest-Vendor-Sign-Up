@@ -24,6 +24,7 @@ function App() {
 
   useEffect(() => {  // fetch the initial data and set the state 
     fetchData();
+    console.log("v 1.0.0")
   }, [])
 
   const fetchData = async () => {
@@ -239,7 +240,7 @@ function App() {
 
 
   return <>
-    <form action="" onSubmit={handleSubmit} ref={formRef}>
+    <form id="formroot" action="" onSubmit={handleSubmit} ref={formRef}>
 
       <div>
         <label htmlFor="email">Email:&nbsp;&nbsp;</label>
@@ -252,21 +253,22 @@ function App() {
         {dirtyCount ? <i>Please save your changes before editing another booth.</i> : undefined}
       </div>
 
-      {activeBoothName && <div className="flex column" style={{ gap: 0 }}>
-        <hr style={{ width: '100%', marginTop: "30px" }} />
-        <i>Currently Editing</i>
-        <h3 style={{ padding: 0, margin: 0 }}>{activeBoothName}</h3>
+      {activeBooth && <div className="flex column card" style={{gap: '12px', width: '100%'}}>
+        <div className="flex column" style={{ gap: 0 }}>
+          {/* <hr style={{ width: '100%', marginTop: "30px" }} /> */}
+          <i>Currently Editing</i>
+          <h3 style={{ padding: 0, margin: 0 }}>{activeBoothName}</h3>
+        </div>
+        {activeBoothName && !addingBottle && <button style={{ textWrap: 'nowrap' }} onClick={startAddBottle} disabled={!activeBooth}>+ Add a Wine</button>}
+        {addingBottle && activeBooth ? <NewBottleForm bottles={bottles} activeBooth={activeBooth} loading={loading} addBottle={addBottle} /> : undefined}
+        <div style={{ display: 'flex', flexDirection: "column", gap: "8px", flexWrap: 'wrap', width: "100%", overflow: "scroll" }}>
+          {activeBooth ?
+            activeBooth.bottles.length > 0
+              ? activeBooth.bottles.map((bottle) => <Tag key={String(bottle["Wine ID"])} item={bottle} bottles={bottles} loading={loading} deleteBottle={deleteBottle} editBottle={changeBottle} setDirtyItem={handleSetDirtyItem} />)
+              : <i>No wines here–Try adding one!</i>
+            : undefined}
+        </div>
       </div>}
-      {activeBoothName && !addingBottle && <button style={{ textWrap: 'nowrap' }} onClick={startAddBottle} disabled={!activeBooth}>+ Add a Wine</button>}
-      {addingBottle && activeBooth ? <NewBottleForm bottles={bottles} activeBooth={activeBooth} loading={loading} addBottle={addBottle} /> : undefined}
-
-      <div style={{ display: 'flex', flexDirection: "column", gap: "8px", flexWrap: 'wrap', marginBottom: '20px', maxWidth: "100%", overflow: "scroll" }}>
-        {activeBooth ?
-          activeBooth.bottles.length > 0
-            ? activeBooth.bottles.map((bottle) => <Tag key={String(bottle["Wine ID"])} item={bottle} bottles={bottles} loading={loading} deleteBottle={deleteBottle} editBottle={changeBottle} setDirtyItem={handleSetDirtyItem} />)
-            : <i>No wines here–Try adding one!</i>
-          : undefined}
-      </div>
 
 
         <button type='submit' value="Submit"

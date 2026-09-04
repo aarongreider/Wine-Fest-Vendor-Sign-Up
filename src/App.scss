@@ -1,9 +1,8 @@
 #formroot {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     max-width: 96vw;
-    width: 750px;
+    width: 100%;
     padding: 40px 0;
 }
 
@@ -52,10 +51,10 @@ form {
 .card {
     background: #c7c7c7;
     padding: 12px;
-    border-radius: 20px;
+    border-radius: 12px;
     gap: 6px;
     box-sizing: border-box;
-    margin: 12px 0
+    /* margin: 12px 0; */
 }
 
 
@@ -101,6 +100,10 @@ form {
 }
 
 .InputSelect {
+    display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 4px;
     .select-container {
         display: flex;
         flex-direction: row;

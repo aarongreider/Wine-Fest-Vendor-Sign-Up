@@ -75,7 +75,7 @@ export default function BottleForm({ item, bottles, loading, readOnly = false, h
             />
         )}
         <div className="InputSelect">
-            <label htmlFor={`${formId}-price`}>price: </label>
+            <label htmlFor={`${formId}-price`}>Price: </label>
             <input
                 id={`${formId}-price`}
                 type="number"
