@@ -21,6 +21,16 @@ form {
     max-width: 100%;
 }
 
+ul {
+    margin: 0;
+    padding: 0;
+    padding-left: 19px;
+
+    li {
+        margin-bottom: 3px;
+    }
+}
+
 
 .flex {
     display: flex;
@@ -105,9 +115,10 @@ form {
     flex-wrap: wrap;
     gap: 4px;
 
-    input {       
-        color: black; 
+    input {
+        color: black;
         font-size: 16px;
+
         &:disabled {
             color: grey;
         }
@@ -136,4 +147,10 @@ form {
     position: fixed;
     z-index: 10;
     width: 50vw;
+}
+
+#submit_button {
+    &:disabled {
+        opacity: .25;
+    }
 }

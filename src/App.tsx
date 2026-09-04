@@ -6,6 +6,7 @@ import Tag from './Tag.tsx';
 import InputSelect from './InputSelect.tsx';
 import NewBottleForm from './NewBottleForm.tsx';
 import WarningWidget from './WarningWidget.tsx';
+import { Icon_Save } from './Icons.tsx';
 
 /* https://cdn.jsdelivr.net/gh/aarongreider/Wine-Fest-Vendor-Sign-Up@main/dist/jj-aaron-winefest-vendor-dashboard-1.0.0.js
    https://cdn.jsdelivr.net/gh/aarongreider/Wine-Fest-Vendor-Sign-Up@main/dist/jj-aaron-winefest-vendor-dashboard.css
@@ -52,7 +53,7 @@ function App() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (dirtyCount > 0/*  || changeLog.size > 0 */) {
-      alert("Please save your changes before submitting")
+      alert("Please save your changes to each bottle you are editing before submitting")
       return
     }
     setIsSubmitted(true)
@@ -269,6 +270,14 @@ function App() {
           <i>Currently Editing</i>
           <h3 style={{ padding: 0, margin: 0 }}>{activeBoothName}</h3>
         </div>
+        <ul>
+          <li>View your wine details below by clicking a wine.</li>
+          <li> If you would like to edit the details, select <b>Edit Wine</b> from the dropdown.</li>
+          <li>Click <b>Stop Editing Wine</b> when you are done editing!</li>
+          <li>You may add up to 5 wines per booth.</li>
+        </ul>
+        {/* <i>View your wine details below. If you would like to edit the details, select "<u>Edit Wine</u>" from the dropdown. Click "<u>Stop Editing Wine</u>" when you are done editing!</i>
+        <i>You may add up to 5 wines per booth.</i> */}
         {activeBoothName && !addingBottle && <button style={{ textWrap: 'nowrap' }} onClick={startAddBottle} disabled={!activeBooth || activeBooth.bottles.length >= 5}>+ Add a Wine</button>}
         {addingBottle && activeBooth ? <NewBottleForm bottles={bottles} activeBooth={activeBooth} loading={loading} addBottle={addBottle} /> : undefined}
         <div style={{ display: 'flex', flexDirection: "column", gap: "8px", flexWrap: 'wrap', width: "100%", overflow: "scroll" }}>
@@ -281,9 +290,9 @@ function App() {
       </div>}
 
 
-      <button type='submit' value="Submit"
-        style={{ background: "rgb(63, 63, 63)", padding: "10px 20px", fontWeight: "bold", fontSize: "18px", color: "white", textWrap: 'nowrap' }}>
-        Save Changes
+      <button type='submit' value="Submit" id="submit_button" /* disabled={changeLog.size == 0} */ className='flex row'
+        style={{ background: "rgb(63, 63, 63)", padding: "10px 20px", fontWeight: "bold", fontSize: "18px", color: "white", textWrap: 'nowrap', gap: '10px' }}>
+        <Icon_Save/>Save Changes
       </button>
       <WarningWidget dirtyCount={dirtyCount} changeLog={changeLog}></WarningWidget>
 

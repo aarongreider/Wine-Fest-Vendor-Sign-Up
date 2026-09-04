@@ -78,7 +78,7 @@ export default function Tag({ item, bottles, loading, deleteBottle, editBottle, 
 
                     <u onClick={handleDeleteBottle}>Delete Wine</u>
                     {editing
-                        ? <u onClick={() => { editBottle(draftItem); setEditing(false) }}>Save Changes to Wine</u>
+                        ? <u onClick={() => { editBottle(draftItem); setEditing(false) }}>Stop Editing Wine</u>
                         : <u onClick={() => { setEditing(true) }}>Edit Wine</u>
                     }
                 </div>

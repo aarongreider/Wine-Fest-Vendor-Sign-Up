@@ -22,6 +22,15 @@ form {
   max-width: 100%;
 }
 
+ul {
+  margin: 0;
+  padding: 0;
+  padding-left: 19px;
+}
+ul li {
+  margin-bottom: 3px;
+}
+
 .flex {
   display: flex;
   align-items: center;
@@ -120,4 +129,8 @@ form {
   position: fixed;
   z-index: 10;
   width: 50vw;
+}
+
+#submit_button:disabled {
+  opacity: 0.25;
 }/*# sourceMappingURL=App.css.map */
