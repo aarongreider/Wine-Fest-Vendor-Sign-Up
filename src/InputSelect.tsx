@@ -79,7 +79,10 @@ export default function InputSelect({ label, id, items, _key, loading, initialVa
                     <>
                         {filteredValues.map((value) =>
                             <button key={value} value={value}
-                                onClick={handleQueryPush}>
+                                onMouseDown={(e) => {
+                                    e.preventDefault()
+                                    handleQueryPush(e)
+                                }}>
                                 {value}
                             </button>)}
 

@@ -93,6 +93,16 @@ form {
   flex-wrap: wrap;
   gap: 4px;
 }
+.InputSelect input {
+  color: black;
+  font-size: 16px;
+}
+.InputSelect input:disabled {
+  color: grey;
+}
+.InputSelect label {
+  font-size: 16px;
+}
 .InputSelect .select-container {
   display: flex;
   flex-direction: row;

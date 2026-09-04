@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Bottle } from "./types"
 import BottleForm from "./BottleForm"
+import { Icon_Construction } from "./Icons"
 
 interface props {
     item: Bottle,
@@ -48,7 +49,10 @@ export default function Tag({ item, bottles, loading, deleteBottle, editBottle, 
         <>
             <div className='tag' style={{ background: `${editing ? 'rgb(91 59 12)' : ''}` }}>
                 <div className="banner" onClick={toggle}>
-                    <h3>{item["Wine Name / Type"]}</h3>
+                    <div className="flex row">
+                        {editing ? <Icon_Construction /> : undefined}
+                        <h3>{item["Wine Name / Type"]}</h3>
+                    </div>
                     <div
                         style={{ height: "min-content", cursor: "pointer" }}>
                         <p style={{ transform: "translateY(-4px)" }}>⌄</p>

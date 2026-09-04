@@ -7,6 +7,9 @@ import InputSelect from './InputSelect.tsx';
 import NewBottleForm from './NewBottleForm.tsx';
 import WarningWidget from './WarningWidget.tsx';
 
+/* https://cdn.jsdelivr.net/gh/aarongreider/Wine-Fest-Vendor-Sign-Up@main/dist/jj-aaron-winefest-vendor-dashboard-1.0.0.js
+   https://cdn.jsdelivr.net/gh/aarongreider/Wine-Fest-Vendor-Sign-Up@main/dist/jj-aaron-winefest-vendor-dashboard.css
+ */
 
 function App() {
   const [formState, setFormState] = useState({})
@@ -24,7 +27,7 @@ function App() {
 
   useEffect(() => {  // fetch the initial data and set the state 
     fetchData();
-    console.log("v 1.0.0")
+    console.log("v 1.0.1")
   }, [])
 
   const fetchData = async () => {
@@ -48,6 +51,10 @@ function App() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    if (dirtyCount > 0/*  || changeLog.size > 0 */) {
+      alert("Please save your changes before submitting")
+      return
+    }
     setIsSubmitted(true)
     console.log(formState)
     try {
@@ -249,17 +256,20 @@ function App() {
 
       <div className='flex column card'>
         <b>Add or select your booth</b>
+        <i>Begin typing your booth name to reveal existing booths. If your booth does not exist yet, type the <u>public facing name</u> of your booth and select "Add New Booth"</i>
         <InputSelect id="booth-select" label="Booth" items={booths} _key="name" loading={loading} readOnly={dirtyCount > 0} handleChange={handleBoothSelect} handleAdd={addPlaceholderBooth} />
         {dirtyCount ? <i>Please save your changes before editing another booth.</i> : undefined}
       </div>
+      
+      <WarningWidget dirtyCount={dirtyCount} changeLog={changeLog}></WarningWidget>
 
-      {activeBooth && <div className="flex column card" style={{gap: '12px', width: '100%'}}>
+      {activeBooth && <div className="flex column card" style={{ gap: '12px', width: '100%' }}>
         <div className="flex column" style={{ gap: 0 }}>
           {/* <hr style={{ width: '100%', marginTop: "30px" }} /> */}
           <i>Currently Editing</i>
           <h3 style={{ padding: 0, margin: 0 }}>{activeBoothName}</h3>
         </div>
-        {activeBoothName && !addingBottle && <button style={{ textWrap: 'nowrap' }} onClick={startAddBottle} disabled={!activeBooth}>+ Add a Wine</button>}
+        {activeBoothName && !addingBottle && <button style={{ textWrap: 'nowrap' }} onClick={startAddBottle} disabled={!activeBooth || activeBooth.bottles.length >= 5}>+ Add a Wine</button>}
         {addingBottle && activeBooth ? <NewBottleForm bottles={bottles} activeBooth={activeBooth} loading={loading} addBottle={addBottle} /> : undefined}
         <div style={{ display: 'flex', flexDirection: "column", gap: "8px", flexWrap: 'wrap', width: "100%", overflow: "scroll" }}>
           {activeBooth ?
@@ -271,12 +281,12 @@ function App() {
       </div>}
 
 
-        <button type='submit' value="Submit"
-          style={{ background: "rgb(63, 63, 63)", padding: "10px 20px", fontWeight: "bold", fontSize: "18px", color: "white", textWrap: 'nowrap' }}>
-          Submit Changes
-        </button>
-        <WarningWidget dirtyCount={dirtyCount} changeLog={changeLog}></WarningWidget>
-   
+      <button type='submit' value="Submit"
+        style={{ background: "rgb(63, 63, 63)", padding: "10px 20px", fontWeight: "bold", fontSize: "18px", color: "white", textWrap: 'nowrap' }}>
+        Save Changes
+      </button>
+      <WarningWidget dirtyCount={dirtyCount} changeLog={changeLog}></WarningWidget>
+
       {isSubmitted ? <p>Your response has been recorded. Thank you for making our 2026 International Wine Festival possible!</p> : undefined}
     </form>
   </>

@@ -101,9 +101,22 @@ form {
 
 .InputSelect {
     display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 4px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+
+    input {       
+        color: black; 
+        font-size: 16px;
+        &:disabled {
+            color: grey;
+        }
+    }
+
+    label {
+        font-size: 16px;
+    }
+
     .select-container {
         display: flex;
         flex-direction: row;
