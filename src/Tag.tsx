@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { flushSync } from "react-dom"
 import { Bottle } from "./types"
 import BottleForm from "./BottleForm"
 import { Icon_Construction, Icon_Delete, Icon_Edit, Icon_Save } from "./Icons"
@@ -10,9 +11,10 @@ interface props {
     deleteBottle: (item: Bottle) => void
     editBottle: (item: Bottle) => void
     setDirtyItem: (dirty: Record<string, boolean>) => void
+    submitForm: () => void
 }
 
-export default function Tag({ item, bottles, loading, deleteBottle, editBottle, setDirtyItem }: props) {
+export default function Tag({ item, bottles, loading, deleteBottle, editBottle, setDirtyItem, submitForm }: props) {
     const [toggled, setToggled] = useState<boolean>(false)
     const [editing, setEditing] = useState<boolean>(false)
     const [draftItem, setDraftItem] = useState<Bottle>(item)
@@ -33,8 +35,14 @@ export default function Tag({ item, bottles, loading, deleteBottle, editBottle, 
     }
 
     const handleSave = () => {
-        editBottle(draftItem);
-        setEditing(false)
+        editBottle(draftItem)
+
+        flushSync(() => {
+            setEditing(false)
+            setDirtyItem({ [`${item["Wine ID"]}`]: false })
+        })
+
+        submitForm()
     }
 
     useEffect(() => {

@@ -10,10 +10,6 @@ p {
     margin: 0 !important;
 }
 
-button {
-    width: min-content;
-}
-
 form {
     display: flex;
     flex-direction: column;
@@ -29,6 +25,10 @@ ul {
     li {
         margin-bottom: 3px;
     }
+}
+
+button, .banner {
+    cursor: pointer;
 }
 
 

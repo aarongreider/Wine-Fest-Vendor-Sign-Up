@@ -50,8 +50,8 @@ function App() {
     setFormState(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
+    e?.preventDefault()
     if (dirtyCount > 0/*  || changeLog.size > 0 */) {
       alert("Please save your changes to each bottle you are editing before submitting")
       return
@@ -285,7 +285,7 @@ function App() {
         <div style={{ display: 'flex', flexDirection: "column", gap: "8px", flexWrap: 'wrap', width: "100%", overflow: "scroll" }}>
           {activeBooth ?
             activeBooth.bottles.length > 0
-              ? activeBooth.bottles.map((bottle) => <Tag key={String(bottle["Wine ID"])} item={bottle} bottles={bottles} loading={loading} deleteBottle={deleteBottle} editBottle={changeBottle} setDirtyItem={handleSetDirtyItem} />)
+              ? activeBooth.bottles.map((bottle) => <Tag key={String(bottle["Wine ID"])} item={bottle} bottles={bottles} loading={loading} deleteBottle={deleteBottle} editBottle={changeBottle} setDirtyItem={handleSetDirtyItem} submitForm={handleSubmit} />)
               : <i>No wines here–Try adding one!</i>
             : undefined}
         </div>
@@ -296,7 +296,6 @@ function App() {
         style={{ background: "rgb(63, 63, 63)", padding: "10px 20px", fontWeight: "bold", fontSize: "18px", color: "white", textWrap: 'nowrap', gap: '10px' }}>
         <Icon_Save/>Save Changes
       </button> */}
-      <WarningWidget dirtyCount={dirtyCount} changeLog={changeLog}></WarningWidget>
 
       {isSubmitted ? <p>Your response has been recorded. Thank you for making our 2026 International Wine Festival possible!</p> : undefined}
     </form>

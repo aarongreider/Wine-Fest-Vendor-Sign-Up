@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Booth, Bottle } from "./types"
 import BottleForm from "./BottleForm"
+import { Icon_Add } from "./Icons"
 
 interface props {
     bottles: Bottle[]
@@ -71,7 +72,11 @@ export default function NewBottleForm({ bottles, activeBooth, loading, addBottle
                 loading={loading}
                 handleChange={handleBottleChange}
             />
-            <button onClick={handleSubmit} style={{ textWrap: 'nowrap' }}>Add New Wine:  <b>{draftItem["Wine Name / Type"]}</b></button>
+            <button onClick={handleSubmit} className="flex row" style={{
+                textWrap: 'nowrap', gap: '8px', background: "#776029", color: "white", padding: "8px 18px 8px 8px", borderRadius: "16px", cursor: "pointer"
+            }}>
+                <Icon_Add />{`Add New wine to booth`.toUpperCase()}  {/* <b>{draftItem["Wine Name / Type"]}</b> */}
+            </button>
         </div>
     </>
 }
