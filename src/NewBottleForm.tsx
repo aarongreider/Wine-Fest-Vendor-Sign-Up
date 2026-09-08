@@ -72,9 +72,7 @@ export default function NewBottleForm({ bottles, activeBooth, loading, addBottle
                 loading={loading}
                 handleChange={handleBottleChange}
             />
-            <button onClick={handleSubmit} className="flex row" style={{
-                textWrap: 'nowrap', gap: '8px', background: "#776029", color: "white", padding: "8px 18px 8px 8px", borderRadius: "16px", cursor: "pointer"
-            }}>
+            <button onClick={handleSubmit} className="flex row btn dark">
                 <Icon_Add />{`Add New wine to booth`.toUpperCase()}  {/* <b>{draftItem["Wine Name / Type"]}</b> */}
             </button>
         </div>

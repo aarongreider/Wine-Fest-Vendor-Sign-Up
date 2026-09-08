@@ -11,7 +11,7 @@ interface props {
     deleteBottle: (item: Bottle) => void
     editBottle: (item: Bottle) => void
     setDirtyItem: (dirty: Record<string, boolean>) => void
-    submitForm: () => void
+    submitForm: (item: Bottle) => void
 }
 
 export default function Tag({ item, bottles, loading, deleteBottle, editBottle, setDirtyItem, submitForm }: props) {
@@ -37,12 +37,22 @@ export default function Tag({ item, bottles, loading, deleteBottle, editBottle, 
     const handleSave = () => {
         editBottle(draftItem)
 
+        const form = document.getElementById('formroot') as HTMLFormElement | null
+        const isValid = form ? form.checkValidity() : true
+
+        if (!isValid) {
+            setEditing(true)
+            setDirtyItem({ [`${item["Wine ID"]}`]: true })
+            form?.reportValidity()
+            return
+        }
+
         flushSync(() => {
             setEditing(false)
             setDirtyItem({ [`${item["Wine ID"]}`]: false })
         })
 
-        submitForm()
+        submitForm(draftItem)
     }
 
     useEffect(() => {

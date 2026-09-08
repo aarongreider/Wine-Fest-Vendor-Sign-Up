@@ -26,7 +26,8 @@ ul li {
   margin-bottom: 3px;
 }
 
-button, .banner {
+button,
+.banner {
   cursor: pointer;
 }
 
@@ -167,4 +168,26 @@ button, .banner {
 
 #submit_button:disabled {
   opacity: 0.25;
+}
+
+.btn {
+  text-wrap: nowrap;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px 4px 4px;
+  margin: 10px 0;
+  gap: 6px;
+  --color: rgb(250, 244, 244);
+  background: rgba(245, 244, 244, 0.229);
+  color: var(--color);
+  fill: var(--color) !important;
+  outline: 2px solid var(--color);
+  cursor: pointer;
+}
+.btn.dark {
+  --color: rgb(237, 232, 232);
+  background: rgb(84, 84, 84);
+  color: var(--color);
+  fill: var(--color) !important;
+  outline: none;
 }/*# sourceMappingURL=App.css.map */

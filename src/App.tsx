@@ -14,6 +14,7 @@ import WarningWidget from './WarningWidget.tsx';
 
 function App() {
   const [formState, setFormState] = useState({})
+  const [isFormValid, setIsFormValid] = useState(false)
   const [loading, setLoading] = useState<boolean>(true)
   const [dirtyItem, setDirtyItem] = useState<Record<string, boolean>>({})
   const [dirtyCount, setDirtyCount] = useState(0)
@@ -24,6 +25,7 @@ function App() {
   const [activeBoothName, setActiveBoothName] = useState<string>()
   const [activeBooth, setActiveBooth] = useState<Booth>()
   const formRef = useRef<HTMLFormElement>(null)
+  const submitOverrideRef = useRef<Record<string, Edit> | null>(null)
   const [addingBottle, setAddingBottle] = useState<Boolean>(false)
 
   useEffect(() => {  // fetch the initial data and set the state 
@@ -45,29 +47,77 @@ function App() {
     }
   };
 
+  const updateFormValidity = () => {
+    const form = formRef.current
+    if (!form) {
+      setIsFormValid(false)
+      return
+    }
+
+    setIsFormValid(form.checkValidity())
+  }
+
   const handleChangeSimple = (e: any) => {
     console.log("change", e.target.name, e.target.value)
     setFormState(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    updateFormValidity()
   };
 
   const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
     e?.preventDefault()
-    if (dirtyCount > 0/*  || changeLog.size > 0 */) {
-      alert("Please save your changes to each bottle you are editing before submitting")
+
+    const form = e?.currentTarget ?? formRef.current
+    const overrideLog = submitOverrideRef.current
+
+    if (form && !form.checkValidity()) {
+      form.reportValidity()
+      submitOverrideRef.current = null
       return
     }
+
+    if (dirtyCount > 0 && !overrideLog) {
+      alert("Please save your changes to each bottle you are editing before submitting")
+      submitOverrideRef.current = null
+      return
+    }
+
     setIsSubmitted(true)
     console.log(formState)
     try {
-      postForm()
+      postForm(overrideLog ?? Object.fromEntries(changeLog))
     } catch (error) {
       console.log(error)
     }
-    
-    setChangeLog(new Map())
+
+    if (overrideLog) {
+      const wineId = Object.keys(overrideLog)[0]
+      setChangeLog((currentLog) => {
+        const updated = new Map(currentLog)
+        updated.delete(wineId)
+        return updated
+      })
+    } else {
+      setChangeLog(new Map())
+    }
+
+    submitOverrideRef.current = null
+  }
+
+  const submitSingleTagChange = (item: Bottle) => {
+    const wineId = item['Wine ID']
+    const singleChange: Edit = {
+      bottle: item,
+      type: EditTypes.CHANGE,
+    }
+
+    setDirtyItem((currentDirtyItems) => ({ ...currentDirtyItems, [wineId]: false }))
+    submitOverrideRef.current = { [wineId]: singleChange }
+    formRef.current?.requestSubmit()
   }
 
   const handleBoothSelect = (e: React.MouseEvent<HTMLButtonElement> | React.ChangeEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>) => {
+    if (!isFormValid) return
+
     e.preventDefault()
     const target = e.target as HTMLButtonElement
     let boothMatch: Booth | undefined = booths.find((booth) => booth.name == target.value)
@@ -76,6 +126,8 @@ function App() {
   }
 
   const addPlaceholderBooth = (e: React.MouseEvent<HTMLButtonElement>, name: string) => {
+    if (!isFormValid) return
+
     e;
     const boothName = name.trim()
     if (!boothName) return
@@ -132,6 +184,14 @@ function App() {
           : booth
       )
     )
+
+    submitOverrideRef.current = {
+      [item['Wine ID']]: {
+        bottle: item,
+        type: EditTypes.ADD,
+      }
+    }
+    formRef.current?.requestSubmit()
   }
 
   const changeBottle = (item: Bottle) => {
@@ -167,7 +227,9 @@ function App() {
     })
   }
 
-  const postForm = async () => {
+  const postForm = async (overrideLog?: Record<string, Edit>) => {
+    const payloadLog = overrideLog ?? Object.fromEntries(changeLog)
+
     try {
       const response = await fetch("https://script.google.com/macros/s/AKfycbx0uNsq4rhJUt-eH2cq5m6LvQm1qS8wXnk9AwvW4vHJgXTbqwrD1UoCLGsWwqpGc1Ieow/exec",
         {
@@ -177,7 +239,7 @@ function App() {
             action: "formSubmit",
             formData: formState,
             submit_time: new Date().toISOString(),
-            changeLog: Object.fromEntries(changeLog)
+            changeLog: payloadLog
           }),
           headers: {
             'Content-Type': 'text/plain;charset=utf-8',
@@ -250,7 +312,11 @@ function App() {
 
 
   return <>
-    <form id="formroot" action="" onSubmit={handleSubmit} ref={formRef}>
+    <form id="formroot" action="" onSubmit={handleSubmit} ref={formRef} onKeyDown={(e) => {
+      if (e.key === 'Enter' && !(e.target instanceof HTMLButtonElement)) {
+        e.preventDefault()
+      }
+    }}>
 
       <div>
         <label htmlFor="email">Email:&nbsp;&nbsp;</label>
@@ -260,7 +326,8 @@ function App() {
       <div className='flex column card'>
         <b>Add or select your booth</b>
         <i>Begin typing your booth name to reveal existing booths. If your booth does not exist yet, type the <u>public facing name</u> of your booth and select "Add New Booth"</i>
-        <InputSelect id="booth-select" label="Booth" items={booths} _key="name" loading={loading} readOnly={dirtyCount > 0} handleChange={handleBoothSelect} handleAdd={addPlaceholderBooth} />
+        <InputSelect id="booth-select" label="Booth" items={booths} _key="name" loading={loading} readOnly={dirtyCount > 0 || !isFormValid} handleChange={handleBoothSelect} handleAdd={addPlaceholderBooth} />
+        {!isFormValid ? <i>Please complete the required form fields before selecting or adding a booth.</i> : undefined}
         {dirtyCount ? <i>Please save your changes before editing another booth.</i> : undefined}
       </div>
       
@@ -285,7 +352,7 @@ function App() {
         <div style={{ display: 'flex', flexDirection: "column", gap: "8px", flexWrap: 'wrap', width: "100%", overflow: "scroll" }}>
           {activeBooth ?
             activeBooth.bottles.length > 0
-              ? activeBooth.bottles.map((bottle) => <Tag key={String(bottle["Wine ID"])} item={bottle} bottles={bottles} loading={loading} deleteBottle={deleteBottle} editBottle={changeBottle} setDirtyItem={handleSetDirtyItem} submitForm={handleSubmit} />)
+              ? activeBooth.bottles.map((bottle) => <Tag key={String(bottle["Wine ID"])} item={bottle} bottles={bottles} loading={loading} deleteBottle={deleteBottle} editBottle={changeBottle} setDirtyItem={handleSetDirtyItem} submitForm={submitSingleTagChange} />)
               : <i>No wines here–Try adding one!</i>
             : undefined}
         </div>
