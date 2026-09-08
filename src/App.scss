@@ -125,7 +125,8 @@ ul {
         font-size: 16px;
 
         &:disabled {
-            color: darkgrey;
+                color: #595858;
+    background: #a6a6a6;
         }
     }
 
