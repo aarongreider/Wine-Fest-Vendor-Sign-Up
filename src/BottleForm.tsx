@@ -55,6 +55,16 @@ export default function BottleForm({ item, bottles, loading, readOnly = false, h
     }
 
     return <>
+    <div className="InputSelect">
+            <label htmlFor={`${formId}-NameType`}>Wine Name or Type: </label>
+            <input
+                id={`${formId}-NameType`}
+                type="text"
+                readOnly={readOnly} disabled={readOnly}
+                value={item["Wine Name / Type"]}
+                onChange={(e) => { handleChange("Wine Name / Type", e.target.value) }}>
+            </input>
+        </div>
         {fields.map(({ label, key, formItems, strictValidation, requireQuery }) =>
             <InputSelect
                 key={`${item["Wine ID"]}-${label}`}

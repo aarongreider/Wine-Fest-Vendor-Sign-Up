@@ -124,7 +124,6 @@ button,
   gap: 6px;
   color: var(--color);
   fill: var(--color);
-  cursor: pointer;
 }
 .tag .utility:disabled {
   opacity: 0.5;
@@ -190,4 +189,11 @@ button,
   color: var(--color);
   fill: var(--color) !important;
   outline: none;
+}
+.btn:disabled {
+  opacity: 0.5;
+}
+
+*:disabled {
+  cursor: not-allowed;
 }/*# sourceMappingURL=App.css.map */

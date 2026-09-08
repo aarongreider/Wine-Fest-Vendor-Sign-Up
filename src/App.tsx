@@ -20,7 +20,7 @@ function App() {
   const [dirtyItem, setDirtyItem] = useState<Record<string, boolean>>({})
   const [dirtyCount, setDirtyCount] = useState(0)
   const [changeLog, setChangeLog] = useState<Map<string, Edit>>(new Map())
-  const [isSubmitted, setIsSubmitted] = useState(false)
+  //const [isSubmitted, setIsSubmitted] = useState(false)
   const [booths, setBooths] = useState<Booth[]>([])
   const [bottles, setBottles] = useState<Bottle[]>([])
   const [activeBoothName, setActiveBoothName] = useState<string>()
@@ -82,7 +82,7 @@ function App() {
       return
     }
 
-    setIsSubmitted(true)
+    //setIsSubmitted(true)
     console.log(formState)
     try {
       postForm(overrideLog ?? Object.fromEntries(changeLog))
@@ -155,10 +155,31 @@ function App() {
 
     const prompt = confirm(`are you sure you want to delete ${item['Wine Name / Type']}?`)
     if (!prompt) return
+
     addToChangeLog(item, EditTypes.DELETE)
     setBottles((currentBottles) => currentBottles.filter((bottle) =>
       String(bottle['Wine ID']) !== String(item['Wine ID'])
     ))
+    setBooths((currentBooths) =>
+      currentBooths.map((booth) =>
+        booth.name === activeBoothName
+          ? { ...booth, bottles: booth.bottles.filter((bottle) => String(bottle['Wine ID']) !== String(item['Wine ID'])) }
+          : booth
+      )
+    )
+    setActiveBooth((currentBooth) => currentBooth && currentBooth.name === activeBoothName
+      ? { ...currentBooth, bottles: currentBooth.bottles.filter((bottle) => String(bottle['Wine ID']) !== String(item['Wine ID'])) }
+      : currentBooth
+    )
+
+    submitOverrideRef.current = {
+      [item['Wine ID']]: {
+        bottle: item,
+        type: EditTypes.DELETE,
+      }
+    }
+
+    formRef.current?.requestSubmit()
   }
 
   const startAddBottle = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -291,7 +312,7 @@ function App() {
   useEffect(() => {
     console.log("dirty?", dirtyItem, dirtyCount)
     setDirtyCount(Object.values(dirtyItem).filter(Boolean).length)
-    setIsSubmitted(false)
+    //setIsSubmitted(false)
 
   }, [dirtyItem])
 
@@ -367,7 +388,7 @@ function App() {
         <Icon_Save/>Save Changes
       </button> */}
 
-      {isSubmitted ? <p>Your response has been recorded. Thank you for making our 2026 International Wine Festival possible!</p> : undefined}
+      {/* {isSubmitted && dirtyCount === 0 ? <p>Your changes have been saved. Thank you for making our 2026 International Wine Festival possible!</p> : undefined} */}
     </form>
   </>
 }

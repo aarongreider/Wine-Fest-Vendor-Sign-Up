@@ -56,16 +56,8 @@ export default function NewBottleForm({ bottles, activeBooth, loading, addBottle
     const handleBottleChange = (key: keyof Bottle, value: string) => {
         setDraftItem((currentDraft) => ({ ...currentDraft, [key]: value }))
     }
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, key: String) => {
-        console.log(e)
-        setDraftItem({ ...draftItem, [`${key}`]: e.target.value })
-    }
     return <>
         <div className="flex column card">
-            <div className="InputSelect">
-                <label htmlFor="wineNameNew">Wine Name or Type:</label>
-                <input type="text" id="wineNameNew" onChange={(e) => handleInputChange(e, "Wine Name / Type")}></input>
-            </div>
             <BottleForm
                 item={draftItem}
                 bottles={bottles}
