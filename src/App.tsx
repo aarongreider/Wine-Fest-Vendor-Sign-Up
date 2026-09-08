@@ -6,6 +6,7 @@ import Tag from './Tag.tsx';
 import InputSelect from './InputSelect.tsx';
 import NewBottleForm from './NewBottleForm.tsx';
 import WarningWidget from './WarningWidget.tsx';
+import { Icon_Add } from './Icons.tsx';
 /* import { Icon_Save } from './Icons.tsx'; */
 
 /* https://cdn.jsdelivr.net/gh/aarongreider/Wine-Fest-Vendor-Sign-Up@main/dist/jj-aaron-winefest-vendor-dashboard-1.0.0.js
@@ -30,7 +31,7 @@ function App() {
 
   useEffect(() => {  // fetch the initial data and set the state 
     fetchData();
-    console.log("v 1.0.1")
+    console.log("v 1.1.1")
   }, [])
 
   const fetchData = async () => {
@@ -257,7 +258,7 @@ function App() {
       console.log("server response:");
       console.log(data);
       console.log(JSON.parse(data.eventObject.postData.contents));
-      
+
     } catch (error) {
       //setSubState(subStates.errorServer)
       console.error('There was a problem with the fetch operation:', error);
@@ -330,7 +331,7 @@ function App() {
         {!isFormValid ? <i>Please complete the required form fields before selecting or adding a booth.</i> : undefined}
         {dirtyCount ? <i>Please save your changes before editing another booth.</i> : undefined}
       </div>
-      
+
       <WarningWidget dirtyCount={dirtyCount} changeLog={changeLog}></WarningWidget>
 
       {activeBooth && <div className="flex column card" style={{ gap: '12px', width: '100%' }}>
@@ -347,7 +348,9 @@ function App() {
         </ul>
         {/* <i>View your wine details below. If you would like to edit the details, select "<u>Edit Wine</u>" from the dropdown. Click "<u>Stop Editing Wine</u>" when you are done editing!</i>
         <i>You may add up to 5 wines per booth.</i> */}
-        {activeBoothName && !addingBottle && <button style={{ textWrap: 'nowrap', background: 'white' }} onClick={startAddBottle} disabled={!activeBooth || activeBooth.bottles.length >= 5}>+ Add a Wine</button>}
+        {activeBoothName && !addingBottle && <button className='flex row btn dark' onClick={startAddBottle} disabled={!activeBooth || activeBooth.bottles.length >= 5}>
+          <Icon_Add /> Add a Wine
+        </button>}
         {addingBottle && activeBooth ? <NewBottleForm bottles={bottles} activeBooth={activeBooth} loading={loading} addBottle={addBottle} /> : undefined}
         <div style={{ display: 'flex', flexDirection: "column", gap: "8px", flexWrap: 'wrap', width: "100%", overflow: "scroll" }}>
           {activeBooth ?

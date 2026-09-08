@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Icon_Add } from './Icons';
 
 interface props {
     label: string,
@@ -70,8 +71,8 @@ export default function InputSelect({ label, id, items, _key, loading, initialVa
            
             {handleAdd && searchQuery.trim() && !hasRoughMatch && focused &&
                     <div style={{ width: '100%', padding: "10px 0" }}>
-                        <button type="button" onClick={handleAddClick} style={{ background: "#676767", color: "white", padding: '5px' }}>
-                            + Add New {label} &quot;{searchQuery.trim()}&quot;
+                        <button type="button" className="flex row btn dark" onClick={handleAddClick}>
+                            <Icon_Add /> Add New {label} &quot;{searchQuery.trim()}&quot;
                         </button>
                     </div>}
             <div className="select-container" style={{ display: `${focused ? 'flex' : 'none'}` }}>
