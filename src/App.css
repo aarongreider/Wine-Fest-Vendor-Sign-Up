@@ -53,7 +53,7 @@ ul li {
 }
 
 .card {
-  background: #c7c7c7;
+  background: #c9beaf;
   padding: 12px;
   border-radius: 12px;
   gap: 6px;
@@ -95,6 +95,10 @@ ul li {
   line-height: 1.75;
   align-self: flex-end;
 }
+.tag button {
+  background: lightgrey;
+  color: black;
+}
 
 .InputSelect {
   display: flex;
@@ -107,7 +111,7 @@ ul li {
   font-size: 16px;
 }
 .InputSelect input:disabled {
-  color: grey;
+  color: darkgrey;
 }
 .InputSelect label {
   font-size: 16px;
