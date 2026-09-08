@@ -6,7 +6,7 @@ import Tag from './Tag.tsx';
 import InputSelect from './InputSelect.tsx';
 import NewBottleForm from './NewBottleForm.tsx';
 import WarningWidget from './WarningWidget.tsx';
-import { Icon_Save } from './Icons.tsx';
+/* import { Icon_Save } from './Icons.tsx'; */
 
 /* https://cdn.jsdelivr.net/gh/aarongreider/Wine-Fest-Vendor-Sign-Up@main/dist/jj-aaron-winefest-vendor-dashboard-1.0.0.js
    https://cdn.jsdelivr.net/gh/aarongreider/Wine-Fest-Vendor-Sign-Up@main/dist/jj-aaron-winefest-vendor-dashboard.css
@@ -63,11 +63,8 @@ function App() {
     } catch (error) {
       console.log(error)
     }
-    formRef.current?.reset()
-    setFormState({})
+    
     setChangeLog(new Map())
-    setBottles([])
-    fetchData()
   }
 
   const handleBoothSelect = (e: React.MouseEvent<HTMLButtonElement> | React.ChangeEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>) => {
@@ -295,10 +292,10 @@ function App() {
       </div>}
 
 
-      <button type='submit' value="Submit" id="submit_button" /* disabled={changeLog.size == 0} */ className='flex row'
+      {/* <button type='submit' value="Submit" id="submit_button" className='flex row'
         style={{ background: "rgb(63, 63, 63)", padding: "10px 20px", fontWeight: "bold", fontSize: "18px", color: "white", textWrap: 'nowrap', gap: '10px' }}>
         <Icon_Save/>Save Changes
-      </button>
+      </button> */}
       <WarningWidget dirtyCount={dirtyCount} changeLog={changeLog}></WarningWidget>
 
       {isSubmitted ? <p>Your response has been recorded. Thank you for making our 2026 International Wine Festival possible!</p> : undefined}
