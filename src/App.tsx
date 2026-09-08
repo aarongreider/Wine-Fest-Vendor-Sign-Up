@@ -83,6 +83,8 @@ function App() {
     const boothName = name.trim()
     if (!boothName) return
 
+    const boothNumber = Date.now()
+
     setBooths((currentBooths) => {
       if (currentBooths.some((booth) => booth.name === boothName)) {
         return currentBooths
@@ -90,7 +92,7 @@ function App() {
 
       return [...currentBooths, {
         name: boothName,
-        number: `placeholder-${Date.now()}`,
+        number: boothNumber,
         bottles: [],
       }]
     })
@@ -125,7 +127,14 @@ function App() {
     if (!activeBoothName) return
 
     addToChangeLog(item, EditTypes.ADD)
-    setBottles(bottles => [...bottles, item])
+    setBottles((currentBottles) => [...currentBottles, item])
+    setBooths((currentBooths) =>
+      currentBooths.map((booth) =>
+        booth.name === activeBoothName
+          ? { ...booth, bottles: [...booth.bottles, item] }
+          : booth
+      )
+    )
   }
 
   const changeBottle = (item: Bottle) => {
@@ -170,6 +179,7 @@ function App() {
           body: JSON.stringify({
             action: "formSubmit",
             formData: formState,
+            submit_time: new Date().toISOString(),
             changeLog: Object.fromEntries(changeLog)
           }),
           headers: {
@@ -188,16 +198,11 @@ function App() {
       console.log("server response:");
       console.log(data);
       console.log(JSON.parse(data.eventObject.postData.contents));
-
-      /* if (isSubmitted) {
-        console.log("Submitted")
-        //setSubState(subStates.success)
-      } */
+      
     } catch (error) {
       //setSubState(subStates.errorServer)
       console.error('There was a problem with the fetch operation:', error);
       throw error; // Ensure the error is propagated if necessary 
-
     }
   }
 
@@ -217,7 +222,7 @@ function App() {
     if (!activeBoothName) return
     const booth = getActiveBooth(booths, activeBoothName)
     setActiveBooth(booth)
-  })
+  }, [bottles, activeBoothName])
 
   useEffect(() => {
     setAddingBottle(false)
@@ -278,7 +283,7 @@ function App() {
         </ul>
         {/* <i>View your wine details below. If you would like to edit the details, select "<u>Edit Wine</u>" from the dropdown. Click "<u>Stop Editing Wine</u>" when you are done editing!</i>
         <i>You may add up to 5 wines per booth.</i> */}
-        {activeBoothName && !addingBottle && <button style={{ textWrap: 'nowrap' }} onClick={startAddBottle} disabled={!activeBooth || activeBooth.bottles.length >= 5}>+ Add a Wine</button>}
+        {activeBoothName && !addingBottle && <button style={{ textWrap: 'nowrap', background: 'white' }} onClick={startAddBottle} disabled={!activeBooth || activeBooth.bottles.length >= 5}>+ Add a Wine</button>}
         {addingBottle && activeBooth ? <NewBottleForm bottles={bottles} activeBooth={activeBooth} loading={loading} addBottle={addBottle} /> : undefined}
         <div style={{ display: 'flex', flexDirection: "column", gap: "8px", flexWrap: 'wrap', width: "100%", overflow: "scroll" }}>
           {activeBooth ?
