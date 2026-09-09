@@ -19,14 +19,13 @@ export default function Tag({ item, bottles, loading, deleteBottle, editBottle, 
     const [editing, setEditing] = useState<boolean>(false)
     const [draftItem, setDraftItem] = useState<Bottle>(item)
 
-    const handleBottleChange = (key: keyof Bottle, value: string) => {
+    const handleBottleChange = (key: keyof Bottle, value: string | number) => {
         console.log("handling bottle change", key, value)
         setDraftItem((currentDraft) => ({ ...currentDraft, [key]: value }))
     }
 
     const toggle = () => {
         setToggled(!toggled)
-        //editBottle(draftItem)
     }
 
     const handleDeleteBottle = () => {
@@ -42,30 +41,25 @@ export default function Tag({ item, bottles, loading, deleteBottle, editBottle, 
 
         if (!isValid) {
             setEditing(true)
-            setDirtyItem({ [`${item["Wine ID"]}`]: true })
+            setDirtyItem({ [`${item["Wine_ID"]}`]: true })
             form?.reportValidity()
             return
         }
 
         flushSync(() => {
             setEditing(false)
-            setDirtyItem({ [`${item["Wine ID"]}`]: false })
+            setDirtyItem({ [`${item["Wine_ID"]}`]: false })
         })
 
         submitForm(draftItem)
     }
 
     useEffect(() => {
-        //console.log(draftItem)
-        //editBottle(draftItem)
-    }, [draftItem])
-
-    useEffect(() => {
         setDraftItem(item)
-    }, [item["Wine ID"]])
+    }, [item["Wine_ID"]])
 
     useEffect(() => {
-        setDirtyItem({ [`${item["Wine ID"]}`]: editing })
+        setDirtyItem({ [`${item["Wine_ID"]}`]: editing })
     }, [editing])
 
     return (
@@ -78,7 +72,7 @@ export default function Tag({ item, bottles, loading, deleteBottle, editBottle, 
                 }}>
                     <div className="flex row">
                         {editing ? <Icon_Construction /> : undefined}
-                        <h3>{item["Wine Name / Type"]}</h3>
+                        <h3>{item.Wine_Name}</h3>
                     </div>
                     <div className="flex row" style={{ gap: '20px' }}>
                         <button id="save_shortcut" className="utility flex row" disabled={!editing} style={{ display: `${editing ? "flex" : "none"}` }}
@@ -114,23 +108,6 @@ export default function Tag({ item, bottles, loading, deleteBottle, editBottle, 
                             <Icon_Delete /> Delete Wine
                         </button>
                     </div>
-
-                    {/*
-                    <div className="flex column" style={{ fontSize: '14px', lineHeight: '1', color: "grey", alignItems: "flex-end", alignSelf: "flex-end", textAlign: "right" }}>
-                        <p>{item["Winery Name"]}</p>
-                        <p>{item["Winery Email"]}</p>
-                        <p>{item["Winery Phone #"]}</p>
-                        <p>{item["Distributor Name"]}</p>
-                        <p>{item["Distributor Email"]}</p>
-                        <p>{item["Distributor Phone #"]}</p>
-                    </div>
-
-                    <u onClick={handleDeleteBottle}>Delete Wine</u>
-                    {editing
-                        ? <u onClick={() => { editBottle(draftItem); setEditing(false) }}>Stop Editing Wine</u>
-                        : <u onClick={() => { setEditing(true) }}>Edit Wine</u>
-                    } 
-                    */}
                 </div>
             </div>
         </>

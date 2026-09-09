@@ -1,30 +1,25 @@
 export type Bottle = {
-    "Timestamp": string,
-    "Booth #": number,
-    "Distributor Name": string,
-    "Winery Name": string,
-    "Booth Name": string,
-    "Wine Name / Type": string,
-    "What country or region is this wine from?": string,
-    "Wine Price": number,
-    "Wine ID": string,
-    "Is this a connoisseur/VIP wine?": string,
-    "New Distributor Name": string,
-    "New Winery Name": string,
-    "If your booth name is not on the list above, enter a new one below. This name will be what is displayed on your booth at the festival.": string,
-    "My distributor is not on the list above. I'd like to enter a new distributor": string,
-    "My winery is not on the list above. I'd like to enter a new winery": string,
-    "Distributor Phone #": string,
-    "Distributor Email": string,
-    "Winery Phone #": string | number,
-    "Winery Email": string,
-    "Email Address": string,
-    "Continue?": string,
+    Created_Time: string
+    Modified_Time: string
+    "Booth #": string
+    Booth_Name: string
+    Wine_Name: string
+    Price: number | string
+    Region: string
+    Is_VIP: string
+    Wine_ID: number | string
+    "Submitter Email Address": string
+    "Distributor Name": string
+    "Distributor Phone #": string | number
+    "Distributor Email": string
+    "Winery Name": string
+    "Winery Phone #": string | number
+    "Winery Email": string
 }
 
 export type Booth = {
     name: string
-    number: string | number
+    number: string
     bottles: Bottle[]
 }
 

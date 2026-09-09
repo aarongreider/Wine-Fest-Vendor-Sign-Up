@@ -3,7 +3,6 @@ import { nanoid } from 'nanoid';
 import { Booth, Bottle } from "../types";
 import BottleLayout from './BottleLayout';
 
-
 interface props {
     booth: Booth,
     index: number,
@@ -11,7 +10,6 @@ interface props {
 }
 
 export function BoothLayout({ booth, index, classAttr: position }: props) {
-
     return <>
         <div className={`boothContainer ${position}`} key={`page-${index}-${nanoid()}`}>
 
@@ -24,8 +22,8 @@ export function BoothLayout({ booth, index, classAttr: position }: props) {
 
             <div className='title'>
                 <div className='nameAndRegion'>
-                    <h1>{booth.bottles[0]["Booth Name"]}</h1>
-                    <p className="region">{booth.bottles[0]['What country or region is this wine from?']}</p>
+                    <h1>{booth.bottles[0].Booth_Name}</h1>
+                    <p className="region">{booth.bottles[0].Region}</p>
                 </div>
             </div>
 

@@ -10,28 +10,26 @@ interface props {
     addBottle: (item: Bottle) => void
 }
 export default function NewBottleForm({ bottles, activeBooth, loading, addBottle }: props) {
+    const now = new Date().toISOString()
+    const bottleId = String(crypto.randomUUID())
+
     const [draftItem, setDraftItem] = useState<Bottle>({
-        "Booth Name": activeBooth.name,
-        "Timestamp": new Date().toISOString(),
-        "Booth #": Number(activeBooth.number),
+        Created_Time: now,
+        Modified_Time: "",
+        "Booth #": String(activeBooth.number),
+        Booth_Name: activeBooth.name,
+        Wine_Name: "",
+        Price: 0,
+        Region: "",
+        Is_VIP: "No",
+        Wine_ID: bottleId,
+        "Submitter Email Address": "",
         "Distributor Name": "",
-        "Winery Name": "",
-        "Wine Name / Type": "",
-        "What country or region is this wine from?": "",
-        "Wine Price": 0,
-        "Wine ID": crypto.randomUUID(),
-        "Is this a connoisseur/VIP wine?": "",
-        "New Distributor Name": "",
-        "New Winery Name": "",
-        "If your booth name is not on the list above, enter a new one below. This name will be what is displayed on your booth at the festival.": "",
-        "My distributor is not on the list above. I'd like to enter a new distributor": "",
-        "My winery is not on the list above. I'd like to enter a new winery": "",
         "Distributor Phone #": "",
         "Distributor Email": "",
+        "Winery Name": "",
         "Winery Phone #": "",
         "Winery Email": "",
-        "Email Address": "",
-        "Continue?": "",
     })
 
     const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -40,9 +38,9 @@ export default function NewBottleForm({ bottles, activeBooth, loading, addBottle
         const requiredFields = [
             draftItem["Winery Name"],
             draftItem["Distributor Name"],
-            draftItem["Wine Name / Type"],
-            draftItem["What country or region is this wine from?"],
-            draftItem["Wine Price"],
+            draftItem.Wine_Name,
+            draftItem.Region,
+            draftItem.Price,
         ]
 
         if (requiredFields.some((field) => `${field}`.trim() === "")) {
@@ -53,7 +51,7 @@ export default function NewBottleForm({ bottles, activeBooth, loading, addBottle
         addBottle(draftItem as Bottle)
     }
 
-    const handleBottleChange = (key: keyof Bottle, value: string) => {
+    const handleBottleChange = (key: keyof Bottle, value: string | number) => {
         setDraftItem((currentDraft) => ({ ...currentDraft, [key]: value }))
     }
     return <>
@@ -65,7 +63,7 @@ export default function NewBottleForm({ bottles, activeBooth, loading, addBottle
                 handleChange={handleBottleChange}
             />
             <button onClick={handleSubmit} className="flex row btn dark">
-                <Icon_Add />{`Add New wine to booth`.toUpperCase()}  {/* <b>{draftItem["Wine Name / Type"]}</b> */}
+                <Icon_Add />{`Add New wine to booth`.toUpperCase()}
             </button>
         </div>
     </>

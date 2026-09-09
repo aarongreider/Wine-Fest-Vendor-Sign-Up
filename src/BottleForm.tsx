@@ -6,7 +6,7 @@ interface Props {
     bottles: Bottle[]
     loading: boolean
     readOnly?: boolean
-    handleChange: (key: keyof Bottle, value: string) => void
+    handleChange: (key: keyof Bottle, value: string | number) => void
 }
 
 export interface FormItem {
@@ -20,9 +20,9 @@ export interface FormItem {
 enum AutoFillField { YES = "YES", NO = "NO" }
 
 export default function BottleForm({ item, bottles, loading, readOnly = false, handleChange }: Props) {
-    const formId = `bottle-${String(item["Wine ID"]).replace(/[^a-zA-Z0-9_-]/g, "-")}`
+    const formId = `bottle-${String(item["Wine_ID"]).replace(/[^a-zA-Z0-9_-]/g, "-")}`
     const fields: Array<{ label: string, key: keyof Bottle, formItems?: FormItem[], strictValidation?: boolean, requireQuery?: boolean }> = [
-        { label: "Region", key: "What country or region is this wine from?", strictValidation: true, requireQuery: false },
+        { label: "Region", key: "Region", strictValidation: true, requireQuery: false },
         {
             label: "Winery", key: "Winery Name", formItems: [
                 { label: "Winery Name", key: "Winery Name", value: AutoFillField.YES },
@@ -42,7 +42,7 @@ export default function BottleForm({ item, bottles, loading, readOnly = false, h
     const handleAdd = (formItems: FormItem[], name: string, clear: () => void) => {
         console.log("Add", name)
         for (const item of formItems) {
-            let response = prompt(`Add New ${item.label}`, item.value == AutoFillField.YES ? name : undefined)
+            const response = prompt(`Add New ${item.label}`, item.value === AutoFillField.YES ? name : undefined)
             if (!response) {
                 clear()
                 handleChange(item.key, "")
@@ -50,24 +50,23 @@ export default function BottleForm({ item, bottles, loading, readOnly = false, h
             }
             handleChange(item.key, response)
             console.log(response)
-
         }
     }
 
     return <>
     <div className="InputSelect">
-            <label htmlFor={`${formId}-NameType`}>Wine Name or Type: </label>
+            <label htmlFor={`${formId}-NameType`}>Wine Name: </label>
             <input
                 id={`${formId}-NameType`}
                 type="text"
                 readOnly={readOnly} disabled={readOnly}
-                value={item["Wine Name / Type"]}
-                onChange={(e) => { handleChange("Wine Name / Type", e.target.value) }}>
+                value={item.Wine_Name}
+                onChange={(e) => { handleChange("Wine_Name", e.target.value) }}>
             </input>
         </div>
         {fields.map(({ label, key, formItems, strictValidation, requireQuery }) =>
             <InputSelect
-                key={`${item["Wine ID"]}-${label}`}
+                key={`${item["Wine_ID"]}-${label}`}
                 label={label}
                 id={`${formId}-${label.toLowerCase()}`}
                 items={bottles}
@@ -90,8 +89,8 @@ export default function BottleForm({ item, bottles, loading, readOnly = false, h
                 id={`${formId}-price`}
                 type="number"
                 readOnly={readOnly} disabled={readOnly}
-                value={item["Wine Price"]}
-                onChange={(e) => { handleChange("Wine Price", e.target.value) }}>
+                value={item.Price}
+                onChange={(e) => { handleChange("Price", e.target.value) }}>
             </input>
         </div>
         <div className="InputSelect">
@@ -100,8 +99,8 @@ export default function BottleForm({ item, bottles, loading, readOnly = false, h
                 id={`${formId}-vip`}
                 type="checkbox"
                 readOnly={readOnly} disabled={readOnly}
-                checked={item["Is this a connoisseur/VIP wine?"] === "Yes"}
-                onChange={(e) => { handleChange("Is this a connoisseur/VIP wine?", e.target.checked ? "Yes" : "No") }}>
+                checked={item.Is_VIP === "Yes"}
+                onChange={(e) => { handleChange("Is_VIP", e.target.checked ? "Yes" : "No") }}>
             </input>
         </div>
     </>

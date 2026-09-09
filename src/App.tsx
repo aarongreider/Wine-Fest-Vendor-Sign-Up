@@ -7,11 +7,6 @@ import InputSelect from './InputSelect.tsx';
 import NewBottleForm from './NewBottleForm.tsx';
 import WarningWidget from './WarningWidget.tsx';
 import { Icon_Add } from './Icons.tsx';
-/* import { Icon_Save } from './Icons.tsx'; */
-
-/* https://cdn.jsdelivr.net/gh/aarongreider/Wine-Fest-Vendor-Sign-Up@main/dist/jj-aaron-winefest-vendor-dashboard-1.0.0.js
-   https://cdn.jsdelivr.net/gh/aarongreider/Wine-Fest-Vendor-Sign-Up@main/dist/jj-aaron-winefest-vendor-dashboard.css
- */
 
 function App() {
   const [formState, setFormState] = useState({})
@@ -20,7 +15,6 @@ function App() {
   const [dirtyItem, setDirtyItem] = useState<Record<string, boolean>>({})
   const [dirtyCount, setDirtyCount] = useState(0)
   const [changeLog, setChangeLog] = useState<Map<string, Edit>>(new Map())
-  //const [isSubmitted, setIsSubmitted] = useState(false)
   const [booths, setBooths] = useState<Booth[]>([])
   const [bottles, setBottles] = useState<Bottle[]>([])
   const [activeBoothName, setActiveBoothName] = useState<string>()
@@ -29,17 +23,16 @@ function App() {
   const submitOverrideRef = useRef<Record<string, Edit> | null>(null)
   const [addingBottle, setAddingBottle] = useState<Boolean>(false)
 
-  useEffect(() => {  // fetch the initial data and set the state 
+  useEffect(() => {
     fetchData();
     console.log("v 1.1.1")
   }, [])
 
   const fetchData = async () => {
     try {
-      //console.log("Fetching data");
       const _bottles: Bottle[] = await fetchWineData();
       const _booths: Booth[] = groupBooths(_bottles);
-      //const _regions: Region[] = groupRegions(_booths);
+      console.log(_bottles)
       setBooths(_booths);
       setBottles(_bottles);
       setLoading(false)
@@ -82,8 +75,6 @@ function App() {
       return
     }
 
-    //setIsSubmitted(true)
-    console.log(formState)
     try {
       postForm(overrideLog ?? Object.fromEntries(changeLog))
     } catch (error) {
@@ -105,7 +96,7 @@ function App() {
   }
 
   const submitSingleTagChange = (item: Bottle) => {
-    const wineId = item['Wine ID']
+    const wineId = String(item["Wine_ID"])
     const singleChange: Edit = {
       bottle: item,
       type: EditTypes.CHANGE,
@@ -121,9 +112,8 @@ function App() {
 
     e.preventDefault()
     const target = e.target as HTMLButtonElement
-    let boothMatch: Booth | undefined = booths.find((booth) => booth.name == target.value)
-    console.log(boothMatch)
-    boothMatch != undefined ? setActiveBoothName(boothMatch.name) : undefined
+    const boothMatch: Booth | undefined = booths.find((booth) => booth.name === target.value)
+    boothMatch !== undefined ? setActiveBoothName(boothMatch.name) : undefined
   }
 
   const addPlaceholderBooth = (e: React.MouseEvent<HTMLButtonElement>, name: string) => {
@@ -133,7 +123,7 @@ function App() {
     const boothName = name.trim()
     if (!boothName) return
 
-    const boothNumber = Date.now()
+    const boothNumber = String(Date.now())
 
     setBooths((currentBooths) => {
       if (currentBooths.some((booth) => booth.name === boothName)) {
@@ -150,30 +140,32 @@ function App() {
   }
 
   const deleteBottle = (item: Bottle) => {
-    console.log("removing item, ", item['Wine Name / Type'], item['Booth Name'])
+    console.log("removing item, ", item.Wine_Name, item.Booth_Name)
     if (!activeBoothName) return
 
-    const prompt = confirm(`are you sure you want to delete ${item['Wine Name / Type']}?`)
+    const prompt = confirm(`are you sure you want to delete ${item.Wine_Name}?`)
     if (!prompt) return
+
+    const wineId = String(item["Wine_ID"])
 
     addToChangeLog(item, EditTypes.DELETE)
     setBottles((currentBottles) => currentBottles.filter((bottle) =>
-      String(bottle['Wine ID']) !== String(item['Wine ID'])
+      String(bottle["Wine_ID"]) !== wineId
     ))
     setBooths((currentBooths) =>
       currentBooths.map((booth) =>
         booth.name === activeBoothName
-          ? { ...booth, bottles: booth.bottles.filter((bottle) => String(bottle['Wine ID']) !== String(item['Wine ID'])) }
+          ? { ...booth, bottles: booth.bottles.filter((bottle) => String(bottle["Wine_ID"]) !== wineId) }
           : booth
       )
     )
     setActiveBooth((currentBooth) => currentBooth && currentBooth.name === activeBoothName
-      ? { ...currentBooth, bottles: currentBooth.bottles.filter((bottle) => String(bottle['Wine ID']) !== String(item['Wine ID'])) }
+      ? { ...currentBooth, bottles: currentBooth.bottles.filter((bottle) => String(bottle["Wine_ID"]) !== wineId) }
       : currentBooth
     )
 
     submitOverrideRef.current = {
-      [item['Wine ID']]: {
+      [wineId]: {
         bottle: item,
         type: EditTypes.DELETE,
       }
@@ -184,7 +176,6 @@ function App() {
 
   const startAddBottle = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    //const target = e.target as HTMLButtonElement
     if (!activeBooth) {
       alert("Please select a booth first")
       return
@@ -194,8 +185,10 @@ function App() {
 
   const addBottle = (item: Bottle) => {
     setAddingBottle(false)
-    console.log("adding item, ", item['Wine Name / Type'], item['Booth Name'])
+    console.log("adding item, ", item.Wine_Name, item.Booth_Name)
     if (!activeBoothName) return
+
+    const wineId = String(item["Wine_ID"])
 
     addToChangeLog(item, EditTypes.ADD)
     setBottles((currentBottles) => [...currentBottles, item])
@@ -208,7 +201,7 @@ function App() {
     )
 
     submitOverrideRef.current = {
-      [item['Wine ID']]: {
+      [wineId]: {
         bottle: item,
         type: EditTypes.ADD,
       }
@@ -217,11 +210,11 @@ function App() {
   }
 
   const changeBottle = (item: Bottle) => {
-    console.log("changing item, ", item['Wine Name / Type'], item['Booth Name'])
+    console.log("changing item, ", item.Wine_Name, item.Booth_Name)
     addToChangeLog(item, EditTypes.CHANGE)
 
     setBottles((currentBottles) => currentBottles.map((bottle) =>
-      String(bottle['Wine ID']) === String(item['Wine ID']) ? item : bottle
+      String(bottle["Wine_ID"]) === String(item["Wine_ID"]) ? item : bottle
     ))
 
     if (!activeBoothName) return
@@ -231,7 +224,7 @@ function App() {
         booth.name === activeBoothName
           ? {
             ...booth,
-            bottles: booth.bottles.map((bottle) => bottle['Wine ID'] === item['Wine ID'] ? item : bottle)
+            bottles: booth.bottles.map((bottle) => String(bottle["Wine_ID"]) === String(item["Wine_ID"]) ? item : bottle)
           }
           : booth
       )
@@ -239,7 +232,7 @@ function App() {
   }
 
   const addToChangeLog = (bottle: Bottle, type: EditTypes) => {
-    const wineId = bottle['Wine ID']
+    const wineId = String(bottle["Wine_ID"])
     const newChange: Edit = { bottle, type }
 
     setChangeLog((currentLog) => {
@@ -271,19 +264,17 @@ function App() {
 
       if (!response.ok) {
         console.log("Server Error. Please wait one moment and resubmit.")
-        //setSubState(subStates.errorServer)
         throw new Error('Network response was not ok');
       }
 
-      var data = await response.json();
+      const data = await response.json();
       console.log("server response:");
       console.log(data);
       console.log(JSON.parse(data.eventObject.postData.contents));
 
     } catch (error) {
-      //setSubState(subStates.errorServer)
       console.error('There was a problem with the fetch operation:', error);
-      throw error; // Ensure the error is propagated if necessary 
+      throw error;
     }
   }
 
@@ -312,11 +303,9 @@ function App() {
   useEffect(() => {
     console.log("dirty?", dirtyItem, dirtyCount)
     setDirtyCount(Object.values(dirtyItem).filter(Boolean).length)
-    //setIsSubmitted(false)
-
   }, [dirtyItem])
 
-  useEffect(() => { // ensure the unsaved changes are tracked 
+  useEffect(() => {
     if (!dirtyCount && !changeLog) return
 
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -330,8 +319,6 @@ function App() {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload)
 
   }, [dirtyCount, changeLog])
-
-
 
   return <>
     <form id="formroot" action="" onSubmit={handleSubmit} ref={formRef} onKeyDown={(e) => {
@@ -357,7 +344,6 @@ function App() {
 
       {activeBooth && <div className="flex column card" style={{ gap: '12px', width: '100%' }}>
         <div className="flex column" style={{ gap: 0 }}>
-          {/* <hr style={{ width: '100%', marginTop: "30px" }} /> */}
           <i>Currently Editing</i>
           <h3 style={{ padding: 0, margin: 0 }}>{activeBoothName}</h3>
         </div>
@@ -367,8 +353,6 @@ function App() {
           <li>Click <b>Stop Editing Wine</b> when you are done editing!</li>
           <li>You may add up to 5 wines per booth.</li>
         </ul>
-        {/* <i>View your wine details below. If you would like to edit the details, select "<u>Edit Wine</u>" from the dropdown. Click "<u>Stop Editing Wine</u>" when you are done editing!</i>
-        <i>You may add up to 5 wines per booth.</i> */}
         {activeBoothName && !addingBottle && <button className='flex row btn dark' onClick={startAddBottle} disabled={!activeBooth || activeBooth.bottles.length >= 5}>
           <Icon_Add /> Add a Wine
         </button>}
@@ -376,19 +360,11 @@ function App() {
         <div style={{ display: 'flex', flexDirection: "column", gap: "8px", flexWrap: 'wrap', width: "100%", overflow: "scroll" }}>
           {activeBooth ?
             activeBooth.bottles.length > 0
-              ? activeBooth.bottles.map((bottle) => <Tag key={String(bottle["Wine ID"])} item={bottle} bottles={bottles} loading={loading} deleteBottle={deleteBottle} editBottle={changeBottle} setDirtyItem={handleSetDirtyItem} submitForm={submitSingleTagChange} />)
+              ? activeBooth.bottles.map((bottle) => <Tag key={String(bottle["Wine_ID"])} item={bottle} bottles={bottles} loading={loading} deleteBottle={deleteBottle} editBottle={changeBottle} setDirtyItem={handleSetDirtyItem} submitForm={submitSingleTagChange} />)
               : <i>No wines here–Try adding one!</i>
             : undefined}
         </div>
       </div>}
-
-
-      {/* <button type='submit' value="Submit" id="submit_button" className='flex row'
-        style={{ background: "rgb(63, 63, 63)", padding: "10px 20px", fontWeight: "bold", fontSize: "18px", color: "white", textWrap: 'nowrap', gap: '10px' }}>
-        <Icon_Save/>Save Changes
-      </button> */}
-
-      {/* {isSubmitted && dirtyCount === 0 ? <p>Your changes have been saved. Thank you for making our 2026 International Wine Festival possible!</p> : undefined} */}
     </form>
   </>
 }
