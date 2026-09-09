@@ -154,6 +154,7 @@ button,
   overflow-y: scroll;
   scrollbar-width: thin;
   max-height: 25vh;
+  margin: 18px;
 }
 .InputSelect button {
   text-wrap: nowrap;

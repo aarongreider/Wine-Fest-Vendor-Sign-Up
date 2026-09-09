@@ -349,8 +349,8 @@ function App() {
         </div>
         <ul>
           <li>View your wine details below by clicking a wine.</li>
-          <li> If you would like to edit the details, select <b>Edit Wine</b> from the dropdown.</li>
-          <li>Click <b>Stop Editing Wine</b> when you are done editing!</li>
+          <li> If you would like to edit the details, select <b>Edit Wine</b> below the details section.</li>
+          <li>Click <b>Save Changes</b> when you are done editing! <i>Clicking this button saves your data to the database.</i></li>
           <li>You may add up to 5 wines per booth.</li>
         </ul>
         {activeBoothName && !addingBottle && <button className='flex row btn dark' onClick={startAddBottle} disabled={!activeBooth || activeBooth.bottles.length >= 5}>
