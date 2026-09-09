@@ -334,7 +334,7 @@ function App() {
 
       <div className='flex column card'>
         <b>Add or select your booth</b>
-        <i>Begin typing your booth name to reveal existing booths. If your booth does not exist yet, type the <u>public facing name</u> of your booth and select "Add New Booth"</i>
+        <i>Begin typing your booth name to reveal existing booths. If your booth does not exist yet, type the <u>public facing name</u> of your booth and select <b>Add New Booth</b></i>
         <InputSelect id="booth-select" label="Booth" items={booths} _key="name" loading={loading} readOnly={dirtyCount > 0 || !isFormValid} handleChange={handleBoothSelect} handleAdd={addPlaceholderBooth} />
         {!isFormValid ? <i>Please complete the required form fields before selecting or adding a booth.</i> : undefined}
         {dirtyCount ? <i>Please save your changes before editing another booth.</i> : undefined}
