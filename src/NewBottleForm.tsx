@@ -40,8 +40,13 @@ export default function NewBottleForm({ bottles, activeBooth, loading, addBottle
             draftItem["Distributor Name"],
             draftItem.Wine_Name,
             draftItem.Region,
-            draftItem.Price,
         ]
+
+        const price = Number(draftItem.Price)
+        if (!Number.isFinite(price) || price <= 0) {
+            alert("Please input the price of your wine.")
+            return
+        }
 
         if (requiredFields.some((field) => `${field}`.trim() === "")) {
             alert("Please provide a wine name, region, winery, distributor, and price.")

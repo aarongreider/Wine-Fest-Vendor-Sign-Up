@@ -107,12 +107,17 @@ function App() {
     formRef.current?.requestSubmit()
   }
 
-  const handleBoothSelect = (e: React.MouseEvent<HTMLButtonElement> | React.ChangeEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>) => {
+  const handleBoothSelect = (e: React.MouseEvent<HTMLButtonElement> | React.ChangeEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>, value?: string) => {
     if (!isFormValid) return
 
     e.preventDefault()
     const target = e.target as HTMLButtonElement
-    const boothMatch: Booth | undefined = booths.find((booth) => booth.name === target.value)
+    if (value === '') {
+      setActiveBoothName(undefined)
+      setActiveBooth(undefined)
+      return
+    }
+    const boothMatch: Booth | undefined = booths.find((booth) => booth.name === (value ?? target.value))
     boothMatch !== undefined ? setActiveBoothName(boothMatch.name) : undefined
   }
 

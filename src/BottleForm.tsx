@@ -45,7 +45,7 @@ export default function BottleForm({ item, bottles, loading, readOnly = false, h
             const response = prompt(`Add New ${item.label}`, item.value === AutoFillField.YES ? name : undefined)
             if (!response) {
                 clear()
-                handleChange(item.key, "")
+                formItems.forEach(({ key }) => handleChange(key, ""))
                 return
             }
             handleChange(item.key, response)
@@ -76,7 +76,7 @@ export default function BottleForm({ item, bottles, loading, readOnly = false, h
                 readOnly={readOnly}
                 strictValidation={strictValidation ?? undefined}
                 requireQuery={requireQuery ?? undefined}
-                handleChange={(event) => handleChange(key, event.currentTarget.value)}
+                handleChange={(event, value) => handleChange(key, value ?? event.currentTarget.value)}
                 handleAdd={formItems ? (event, _name, clear) => {
                     const name = event.currentTarget.closest(".InputSelect")?.querySelector("input")?.value ?? ""
                     handleAdd(formItems, name, clear)
@@ -84,7 +84,7 @@ export default function BottleForm({ item, bottles, loading, readOnly = false, h
             />
         )}
         <div className="InputSelect">
-            <label htmlFor={`${formId}-price`}>Price: </label>
+            <label htmlFor={`${formId}-price`}>November Retail Price: </label>
             <input
                 id={`${formId}-price`}
                 type="number"

@@ -11,7 +11,7 @@ interface props {
     readOnly?: boolean
     strictValidation?: boolean
     requireQuery?: boolean
-    handleChange: (e: React.MouseEvent<HTMLButtonElement> | React.ChangeEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>) => void
+    handleChange: (e: React.MouseEvent<HTMLButtonElement> | React.ChangeEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>, value?: string) => void
     handleAdd?: (e: React.MouseEvent<HTMLButtonElement>, value: string, clear: () => void) => void
 }
 
@@ -51,7 +51,7 @@ export default function InputSelect({ label, id, items, _key, loading, initialVa
             alert(`Invalid ${label}. Please select a suggested value or add a new ${label.toLowerCase()}.`)
             e.currentTarget.value = ''
             setSearchQuery('')
-            handleChange(e)
+            handleChange(e, '')
         }
         setFocused(false)
     }
