@@ -8,8 +8,13 @@ import NewBottleForm from './NewBottleForm.tsx';
 import WarningWidget from './WarningWidget.tsx';
 import { Icon_Add } from './Icons.tsx';
 
+const boothNumberAccessEmails = ["workflow@junglejims.com", "agreider@junglejims.com",
+  "taskren@junglejims.com", "jstrickler@junglejims.com", "fsneed@junglejims.com", "mschwartzman@junglejims.com",
+  "mgomez@junglejims.com", "zcobb@junglejims.com"
+];
+
 function App() {
-  const [formState, setFormState] = useState({})
+  const [formState, setFormState] = useState<Record<string, string>>({})
   const [isFormValid, setIsFormValid] = useState(false)
   const [loading, setLoading] = useState<boolean>(true)
   const [dirtyItem, setDirtyItem] = useState<Record<string, boolean>>({})
@@ -25,7 +30,7 @@ function App() {
 
   useEffect(() => {
     fetchData();
-    console.log("v 1.1.1")
+    console.log("v 1.1.2")
   }, [])
 
   const fetchData = async () => {
@@ -56,6 +61,8 @@ function App() {
     setFormState(prev => ({ ...prev, [e.target.name]: e.target.value }));
     updateFormValidity()
   };
+
+  const isAdmin = boothNumberAccessEmails.includes(formState.email?.trim().toLowerCase() ?? "")
 
   const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
     e?.preventDefault()
@@ -129,6 +136,7 @@ function App() {
     if (!boothName) return
 
     const boothNumber = String(Date.now())
+    const boothId = crypto.randomUUID()
 
     setBooths((currentBooths) => {
       if (currentBooths.some((booth) => booth.name === boothName)) {
@@ -138,6 +146,7 @@ function App() {
       return [...currentBooths, {
         name: boothName,
         number: boothNumber,
+        ID: boothId,
         bottles: [],
       }]
     })
@@ -250,8 +259,8 @@ function App() {
   const postForm = async (overrideLog?: Record<string, Edit>) => {
     const payloadLog = overrideLog ?? Object.fromEntries(changeLog)
 
-    try {
-      const response = await fetch("https://script.google.com/macros/s/AKfycbx0uNsq4rhJUt-eH2cq5m6LvQm1qS8wXnk9AwvW4vHJgXTbqwrD1UoCLGsWwqpGc1Ieow/exec",
+    try {                           
+      const response = await fetch("https://script.google.com/macros/s/AKfycbz4yrN6sQF9b1foeOmfD_5lvrrghd0MAqXRwcsy-Bv-l12XdChOGnbIzMwkVV2YHMFcRA/exec",
         {
           redirect: "follow",
           method: "POST",
@@ -352,20 +361,29 @@ function App() {
           <i>Currently Editing</i>
           <h3 style={{ padding: 0, margin: 0 }}>{activeBoothName}</h3>
         </div>
+        {/* {isAdmin && <div className="InputSelect">
+          <label htmlFor={`set-booth-number`}>Booth Number: </label>
+          <input
+            id={`set-booth-number`}
+            type="text"
+            value={activeBooth.number}
+            onChange={(e) => { handleChangeBoothNum("Booth #", e.target.value) }}
+          />
+        </div>} */}
         <ul>
           <li>View your wine details below by clicking a wine.</li>
           <li> If you would like to edit the details, select <b>Edit Wine</b> below the details section.</li>
           <li>Click <b>Save Changes</b> when you are done editing! <i>Clicking this button saves your data to the database.</i></li>
           <li>You may add up to 5 wines per booth.</li>
         </ul>
-        {activeBoothName && !addingBottle && <button className='flex row btn dark' onClick={startAddBottle} disabled={!activeBooth || activeBooth.bottles.length >= 5}>
+        {activeBoothName && !addingBottle && <button className='flex row btn dark' onClick={startAddBottle} disabled={!activeBooth || (activeBooth.bottles.length >= 5 && !isAdmin)}>
           <Icon_Add /> Add a Wine
         </button>}
-        {addingBottle && activeBooth ? <NewBottleForm bottles={bottles} activeBooth={activeBooth} loading={loading} addBottle={addBottle} /> : undefined}
+        {addingBottle && activeBooth ? <NewBottleForm bottles={bottles} activeBooth={activeBooth} loading={loading} addBottle={addBottle} isAdmin={isAdmin} /> : undefined}
         <div style={{ display: 'flex', flexDirection: "column", gap: "8px", flexWrap: 'wrap', width: "100%", overflow: "scroll" }}>
           {activeBooth ?
             activeBooth.bottles.length > 0
-              ? activeBooth.bottles.map((bottle) => <Tag key={String(bottle["Wine_ID"])} item={bottle} bottles={bottles} loading={loading} deleteBottle={deleteBottle} editBottle={changeBottle} setDirtyItem={handleSetDirtyItem} submitForm={submitSingleTagChange} />)
+              ? activeBooth.bottles.map((bottle) => <Tag key={String(bottle["Wine_ID"])} item={bottle} bottles={bottles} loading={loading} isAdmin={isAdmin} deleteBottle={deleteBottle} editBottle={changeBottle} setDirtyItem={handleSetDirtyItem} submitForm={submitSingleTagChange} />)
               : <i>No wines here–Try adding one!</i>
             : undefined}
         </div>

@@ -8,13 +8,14 @@ interface props {
     item: Bottle,
     bottles: Bottle[],
     loading: boolean,
+    isAdmin: boolean,
     deleteBottle: (item: Bottle) => void
     editBottle: (item: Bottle) => void
     setDirtyItem: (dirty: Record<string, boolean>) => void
     submitForm: (item: Bottle) => void
 }
 
-export default function Tag({ item, bottles, loading, deleteBottle, editBottle, setDirtyItem, submitForm }: props) {
+export default function Tag({ item, bottles, loading, isAdmin, deleteBottle, editBottle, setDirtyItem, submitForm }: props) {
     const [toggled, setToggled] = useState<boolean>(false)
     const [editing, setEditing] = useState<boolean>(false)
     const [draftItem, setDraftItem] = useState<Bottle>(item)
@@ -93,6 +94,8 @@ export default function Tag({ item, bottles, loading, deleteBottle, editBottle, 
                         readOnly={!editing}
                         handleChange={handleBottleChange}
                     />
+                    
+                    {isAdmin ? item.Booth_ID : undefined}
 
                     <div className="utilities flex row">
                         <button className="utility flex row" id="edit_wine" disabled={editing}

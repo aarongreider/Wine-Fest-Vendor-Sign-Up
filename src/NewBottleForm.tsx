@@ -7,6 +7,7 @@ interface props {
     bottles: Bottle[]
     activeBooth: Booth
     loading: boolean
+    isAdmin: boolean
     addBottle: (item: Bottle) => void
 }
 export default function NewBottleForm({ bottles, activeBooth, loading, addBottle }: props) {
@@ -17,6 +18,7 @@ export default function NewBottleForm({ bottles, activeBooth, loading, addBottle
         Created_Time: now,
         Modified_Time: "",
         "Booth #": String(activeBooth.number),
+        Booth_ID: activeBooth.ID,
         Booth_Name: activeBooth.name,
         Wine_Name: "",
         Price: 0,

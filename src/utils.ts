@@ -31,15 +31,16 @@ export const groupBooths = (response: Bottle[]): Booth[] => {
     const booths: Booth[] = []
 
     response.forEach((bottle: Bottle) => {
-        const boothNum = String(bottle["Booth #"])
-        const existingBooth: Booth | undefined = booths.find((booth) => String(booth.number) === boothNum)
+        const boothId = bottle.Booth_ID
+        const existingBooth: Booth | undefined = booths.find((booth) => booth.ID === boothId)
 
         if (existingBooth) {
             existingBooth.bottles.push(bottle)
         } else {
             const booth: Booth = {
                 name: bottle.Booth_Name,
-                number: boothNum,
+                number: String(bottle["Booth #"]),
+                ID: boothId,
                 bottles: [bottle]
             }
             booths.push(booth)

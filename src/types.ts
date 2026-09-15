@@ -2,6 +2,7 @@ export type Bottle = {
     Created_Time: string
     Modified_Time: string
     "Booth #": string
+    Booth_ID: string
     Booth_Name: string
     Wine_Name: string
     Price: number | string
@@ -20,6 +21,7 @@ export type Bottle = {
 export type Booth = {
     name: string
     number: string
+    ID: string
     bottles: Bottle[]
 }
 
