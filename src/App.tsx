@@ -30,7 +30,7 @@ function App() {
 
   useEffect(() => {
     fetchData();
-    console.log("v 1.1.3")
+    console.log("v 1.1.4")
   }, [])
 
   const fetchData = async () => {

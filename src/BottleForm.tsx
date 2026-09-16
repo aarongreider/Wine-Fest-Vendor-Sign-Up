@@ -24,17 +24,17 @@ export default function BottleForm({ item, bottles, loading, readOnly = false, h
     const fields: Array<{ label: string, key: keyof Bottle, formItems?: FormItem[], strictValidation?: boolean, requireQuery?: boolean }> = [
         { label: "Region", key: "Region", strictValidation: true, requireQuery: false },
         {
-            label: "Winery", key: "Winery Name", formItems: [
+            label: "Winery", key: "Winery Name", formItems: [/* 
                 { label: "Winery Name", key: "Winery Name", value: AutoFillField.YES },
                 { label: "Winery Phone", key: "Winery Phone #", value: AutoFillField.NO },
-                { label: "Winery Email", key: "Winery Email", value: AutoFillField.NO }
+                { label: "Winery Email", key: "Winery Email", value: AutoFillField.NO } */
             ]
         },
         {
-            label: "Distributor", key: "Distributor Name", formItems: [
+            label: "Distributor", key: "Distributor Name", formItems: [/* 
                 { label: "Distributor Name", key: "Distributor Name", value: AutoFillField.YES },
                 { label: "Distributor Phone", key: "Distributor Phone #", value: AutoFillField.NO },
-                { label: "Distributor Email", key: "Distributor Email", value: AutoFillField.NO }
+                { label: "Distributor Email", key: "Distributor Email", value: AutoFillField.NO } */
             ]
         },
     ]

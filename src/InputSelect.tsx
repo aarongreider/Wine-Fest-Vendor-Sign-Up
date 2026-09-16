@@ -22,6 +22,7 @@ const cleanString = (value: string) =>
 export default function InputSelect({ label, id, items, _key, loading, initialValue, readOnly = false, strictValidation = true, requireQuery = true, handleChange, handleAdd }: props) {
     const [searchQuery, setSearchQuery] = useState(initialValue || '');
     const [focused, setFocused] = useState<boolean>(false);
+    const [addedValue, setAddedValue] = useState<string>();
     const filteredItems = items.filter((item) =>
         cleanString(String(item[_key])).includes(cleanString(searchQuery))
     );
@@ -31,16 +32,21 @@ export default function InputSelect({ label, id, items, _key, loading, initialVa
     );
     const hasExactMatch = items.some((item) =>
         String(item[_key]).trim() === searchQuery.trim()
-    );
+    ) || addedValue === searchQuery.trim();
 
     const handleQueryPush = (e: React.MouseEvent<HTMLButtonElement> | React.ChangeEvent<HTMLInputElement>, _focused = false) => {
         handleChange(e)
         setSearchQuery(e.currentTarget.value)
+        setAddedValue(undefined)
         setFocused(_focused)
     }
 
     const handleAddClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-        handleAdd?.(e, searchQuery.trim(), () => setSearchQuery(''))
+        setAddedValue(searchQuery.trim())
+        handleAdd?.(e, searchQuery.trim(), () => {
+            setSearchQuery('')
+            setAddedValue(undefined)
+        })
         setFocused(false)
     }
 
@@ -53,6 +59,7 @@ export default function InputSelect({ label, id, items, _key, loading, initialVa
 If you have already added this ${label.toLowerCase()}, please verify that what you typed is free of typos, or select a suggested value.`)
             e.currentTarget.value = ''
             setSearchQuery('')
+            setAddedValue(undefined)
             handleChange(e, '')
         }
         setFocused(false)
