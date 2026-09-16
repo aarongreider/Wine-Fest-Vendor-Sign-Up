@@ -30,7 +30,7 @@ function App() {
 
   useEffect(() => {
     fetchData();
-    console.log("v 1.0.8")
+    console.log("v 1.0.9")
   }, [])
 
   const fetchData = async () => {
@@ -57,7 +57,7 @@ function App() {
   }
 
   const handleChangeSimple = (e: any) => {
-    console.log("change", e.target.name, e.target.value)
+    //console.log("change", e.target.name, e.target.value)
     setFormState(prev => ({ ...prev, [e.target.name]: e.target.value }));
     updateFormValidity()
   };
@@ -315,7 +315,7 @@ function App() {
   }, [activeBoothName])
 
   useEffect(() => {
-    console.log("dirty?", dirtyItem, dirtyCount)
+    //console.log("dirty?", dirtyItem, dirtyCount)
     setDirtyCount(Object.values(dirtyItem).filter(Boolean).length)
   }, [dirtyItem])
 

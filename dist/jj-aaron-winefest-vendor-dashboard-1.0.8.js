@@ -12577,7 +12577,7 @@ function App() {
   const [addingBottle, setAddingBottle] = reactExports.useState(false);
   reactExports.useEffect(() => {
     fetchData();
-    console.log("v 1.0.8");
+    console.log("v 1.0.9");
   }, []);
   const fetchData = async () => {
     try {
@@ -12600,7 +12600,6 @@ function App() {
     setIsFormValid(form.checkValidity());
   };
   const handleChangeSimple = (e) => {
-    console.log("change", e.target.name, e.target.value);
     setFormState((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     updateFormValidity();
   };
@@ -12809,7 +12808,6 @@ function App() {
     setAddingBottle(false);
   }, [activeBoothName]);
   reactExports.useEffect(() => {
-    console.log("dirty?", dirtyItem, dirtyCount);
     setDirtyCount(Object.values(dirtyItem).filter(Boolean).length);
   }, [dirtyItem]);
   reactExports.useEffect(() => {
