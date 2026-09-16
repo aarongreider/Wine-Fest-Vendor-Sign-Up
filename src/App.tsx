@@ -30,7 +30,7 @@ function App() {
 
   useEffect(() => {
     fetchData();
-    console.log("v 1.1.4")
+    console.log("v 1.1.5")
   }, [])
 
   const fetchData = async () => {
@@ -344,6 +344,10 @@ function App() {
       <div>
         <label htmlFor="email">Email:&nbsp;&nbsp;</label>
         <input type="email" name="email" id="email" required onInput={handleChangeSimple} />
+      </div>
+      <div>
+        <label htmlFor="phone">Phone:&nbsp;&nbsp;</label>
+        <input type="tel" name="phone" id="phone" required onInput={handleChangeSimple} />
       </div>
 
       <div className='flex column card'>
