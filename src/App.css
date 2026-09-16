@@ -175,6 +175,9 @@ button,
 }
 
 .btn {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
   text-wrap: nowrap;
   border: none;
   border-radius: 6px;
