@@ -8,8 +8,8 @@ export default defineConfig({
       rollupOptions: {
         output: {
           dir: './dist/',
-          entryFileNames: 'jj-aaron-winefest-vendor-dashboard-1.0.7.js',
-          assetFileNames: 'jj-aaron-winefest-vendor-dashboard-1.0.7.css',
+          entryFileNames: 'jj-aaron-winefest-vendor-dashboard-1.0.8.js',
+          assetFileNames: 'jj-aaron-winefest-vendor-dashboard-1.0.8.css',
         }
       }
     },
