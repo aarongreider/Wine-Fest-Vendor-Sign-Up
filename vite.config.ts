@@ -5,12 +5,14 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   build: {
+    minify: false, // disables JS minification (esbuild by default)
+    cssMinify: false, // optional: also disable CSS minification
       rollupOptions: {
         output: {
           dir: './dist/',
           entryFileNames: 'jj-aaron-winefest-vendor-dashboard-1.0.8.js',
           assetFileNames: 'jj-aaron-winefest-vendor-dashboard-1.0.8.css',
-        }
+        },
       }
     },
 })
