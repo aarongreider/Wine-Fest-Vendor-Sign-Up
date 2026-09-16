@@ -30,7 +30,7 @@ function App() {
 
   useEffect(() => {
     fetchData();
-    console.log("v 1.1.5")
+    console.log("v 1.1.6")
   }, [])
 
   const fetchData = async () => {
@@ -259,7 +259,7 @@ function App() {
   const postForm = async (overrideLog?: Record<string, Edit>) => {
     const payloadLog = overrideLog ?? Object.fromEntries(changeLog)
 
-    try {                           
+    try {
       const response = await fetch("https://script.google.com/macros/s/AKfycbz4yrN6sQF9b1foeOmfD_5lvrrghd0MAqXRwcsy-Bv-l12XdChOGnbIzMwkVV2YHMFcRA/exec",
         {
           redirect: "follow",
@@ -350,13 +350,15 @@ function App() {
         <input type="tel" name="phone" id="phone" required onInput={handleChangeSimple} />
       </div>
 
-      <div className='flex column card'>
-        <b>Add or select your booth</b>
-        <i>Begin typing your booth name to reveal existing booths. If your booth does not exist yet, type the <u>public facing name</u> of your booth and select <b>Add New Booth</b></i>
-        <InputSelect id="booth-select" label="Booth" items={booths} _key="name" loading={loading} readOnly={dirtyCount > 0 || !isFormValid} handleChange={handleBoothSelect} handleAdd={addPlaceholderBooth} />
-        {!isFormValid ? <i>Please complete the required form fields before selecting or adding a booth.</i> : undefined}
-        {dirtyCount ? <i>Please save your changes before editing another booth.</i> : undefined}
-      </div>
+      {!loading
+        ? <div className='flex column card'>
+          <b>Add or select your booth</b>
+          <i>Begin typing your booth name to reveal existing booths. If your booth does not exist yet, type the <u>public facing name</u> of your booth and select <b>Add New Booth</b></i>
+          <InputSelect id="booth-select" label="Booth" items={booths} _key="name" loading={loading} readOnly={dirtyCount > 0 || !isFormValid} handleChange={handleBoothSelect} handleAdd={addPlaceholderBooth} />
+          {!isFormValid ? <i>Please complete the required form fields before selecting or adding a booth.</i> : undefined}
+          {dirtyCount ? <i>Please save your changes before editing another booth.</i> : undefined}
+        </div>
+        : <i>Loading Wine Festival Data...</i>}
 
       <WarningWidget dirtyCount={dirtyCount} changeLog={changeLog}></WarningWidget>
 
