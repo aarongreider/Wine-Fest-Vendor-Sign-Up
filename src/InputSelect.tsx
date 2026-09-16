@@ -48,7 +48,9 @@ export default function InputSelect({ label, id, items, _key, loading, initialVa
         if (e.currentTarget.parentElement?.contains(e.relatedTarget as Node)) return
 
         if (strictValidation && searchQuery.trim() && !hasExactMatch) {
-            alert(`Invalid ${label}. Please select a suggested value or add a new ${label.toLowerCase()}.`)
+            alert(`This ${label.toLowerCase()} does not exist yet. Please retype the name of the ${label.toLowerCase()} and select the button that says "+ Add New ${label}." 
+
+If you have already added this ${label.toLowerCase()}, please verify that what you typed is free of typos, or select a suggested value.`)
             e.currentTarget.value = ''
             setSearchQuery('')
             handleChange(e, '')
@@ -67,7 +69,7 @@ export default function InputSelect({ label, id, items, _key, loading, initialVa
            
             {handleAdd && searchQuery.trim() && !hasRoughMatch && focused &&
                     <div style={{ width: '100%', padding: "0" }}>
-                        <button type="button" className="flex row btn dark" onClick={handleAddClick}>
+                        <button type="button" className="flex row btn dark add_new" onMouseDown={(e) => e.preventDefault()} onClick={handleAddClick}>
                             <Icon_Add /> Add New {label} &quot;{searchQuery.trim()}&quot;
                         </button>
                     </div>}
