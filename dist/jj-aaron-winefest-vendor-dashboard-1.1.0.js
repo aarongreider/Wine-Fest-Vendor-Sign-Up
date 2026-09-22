@@ -12230,7 +12230,7 @@ If you have already added this ${label.toLowerCase()}, please verify that what y
 function BottleForm({ item, bottles, loading, readOnly = false, handleChange }) {
   const formId = `bottle-${String(item["Wine_ID"]).replace(/[^a-zA-Z0-9_-]/g, "-")}`;
   const fields = [
-    { label: "Region", key: "Region", strictValidation: true, requireQuery: false },
+    { label: "Region", key: "Region", requireQuery: false, formItems: [] },
     {
       label: "Winery",
       key: "Winery Name",
@@ -12578,7 +12578,7 @@ function App() {
   const [addingBottle, setAddingBottle] = reactExports.useState(false);
   reactExports.useEffect(() => {
     fetchData();
-    console.log("v 1.1.0");
+    console.log("v 1.1.1");
   }, []);
   const fetchData = async () => {
     try {

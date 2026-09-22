@@ -22,7 +22,7 @@ enum AutoFillField { YES = "YES", NO = "NO" }
 export default function BottleForm({ item, bottles, loading, readOnly = false, handleChange }: Props) {
     const formId = `bottle-${String(item["Wine_ID"]).replace(/[^a-zA-Z0-9_-]/g, "-")}`
     const fields: Array<{ label: string, key: keyof Bottle, formItems?: FormItem[], strictValidation?: boolean, requireQuery?: boolean }> = [
-        { label: "Region", key: "Region", strictValidation: true, requireQuery: false },
+        { label: "Region", key: "Region", requireQuery: false, formItems: [] },
         {
             label: "Winery", key: "Winery Name", formItems: [/* 
                 { label: "Winery Name", key: "Winery Name", value: AutoFillField.YES },
