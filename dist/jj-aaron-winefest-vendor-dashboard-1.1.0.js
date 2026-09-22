@@ -12490,7 +12490,8 @@ function NewBottleForm({ bottles, activeBooth, loading, addBottle }) {
     Region: "",
     Is_VIP: "No",
     Wine_ID: bottleId,
-    "Submitter Email Address": "",
+    "Submitter_Email": "",
+    "Submitter_Phone": "",
     "Distributor Name": "",
     "Distributor Phone #": "",
     "Distributor Email": "",
@@ -12577,7 +12578,7 @@ function App() {
   const [addingBottle, setAddingBottle] = reactExports.useState(false);
   reactExports.useEffect(() => {
     fetchData();
-    console.log("v 1.0.9");
+    console.log("v 1.1.0");
   }, []);
   const fetchData = async () => {
     try {

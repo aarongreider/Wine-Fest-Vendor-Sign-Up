@@ -9,7 +9,8 @@ export type Bottle = {
     Region: string
     Is_VIP: string
     Wine_ID: number | string
-    "Submitter Email Address": string
+    "Submitter_Email": string
+    "Submitter_Phone": string
     "Distributor Name": string
     "Distributor Phone #": string | number
     "Distributor Email": string
