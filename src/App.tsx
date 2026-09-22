@@ -6,7 +6,7 @@ import Tag from './Tag.tsx';
 import InputSelect from './InputSelect.tsx';
 import NewBottleForm from './NewBottleForm.tsx';
 import WarningWidget from './WarningWidget.tsx';
-import { Icon_Add } from './Icons.tsx';
+import { Icon_Add, Icon_Save } from './Icons.tsx';
 
 const boothNumberAccessEmails = ["workflow@junglejims.com", "agreider@junglejims.com",
   "taskren@junglejims.com", "jstrickler@junglejims.com", "fsneed@junglejims.com", "mschwartzman@junglejims.com",
@@ -30,7 +30,7 @@ function App() {
 
   useEffect(() => {
     fetchData();
-    console.log("v 1.1.1")
+    console.log("v 1.1.2")
   }, [])
 
   const fetchData = async () => {
@@ -113,7 +113,7 @@ function App() {
     submitOverrideRef.current = { [wineId]: singleChange }
     formRef.current?.requestSubmit()
   }
-
+  
   const handleBoothSelect = (e: React.MouseEvent<HTMLButtonElement> | React.ChangeEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>, value?: string) => {
     if (!isFormValid) return
 
@@ -135,8 +135,9 @@ function App() {
     const boothName = name.trim()
     if (!boothName) return
 
-    const boothNumber = String(Date.now())
     const boothId = crypto.randomUUID()
+    const boothNumber = boothId
+
 
     setBooths((currentBooths) => {
       if (currentBooths.some((booth) => booth.name === boothName)) {
@@ -162,7 +163,7 @@ function App() {
 
     const wineId = String(item["Wine_ID"])
 
-    addToChangeLog(item, EditTypes.DELETE)
+    addToChangeLog(EditTypes.DELETE, item)
     setBottles((currentBottles) => currentBottles.filter((bottle) =>
       String(bottle["Wine_ID"]) !== wineId
     ))
@@ -204,7 +205,7 @@ function App() {
 
     const wineId = String(item["Wine_ID"])
 
-    addToChangeLog(item, EditTypes.ADD)
+    addToChangeLog(EditTypes.ADD, item)
     setBottles((currentBottles) => [...currentBottles, item])
     setBooths((currentBooths) =>
       currentBooths.map((booth) =>
@@ -225,7 +226,7 @@ function App() {
 
   const changeBottle = (item: Bottle) => {
     console.log("changing item, ", item.Wine_Name, item.Booth_Name)
-    addToChangeLog(item, EditTypes.CHANGE)
+    addToChangeLog(EditTypes.CHANGE, item)
 
     setBottles((currentBottles) => currentBottles.map((bottle) =>
       String(bottle["Wine_ID"]) === String(item["Wine_ID"]) ? item : bottle
@@ -245,15 +246,49 @@ function App() {
     )
   }
 
-  const addToChangeLog = (bottle: Bottle, type: EditTypes) => {
-    const wineId = String(bottle["Wine_ID"])
-    const newChange: Edit = { bottle, type }
+  const handleChangeBoothNum = (item: Booth) => {
+    console.log(`Changing booth ${item.ID} number to ${item.number}`)
+    setBottles((currentBottles) => currentBottles.map((bottle) =>
+      bottle.Booth_ID === item.ID
+        ? { ...bottle, "Booth #": item.number }
+        : bottle
+    ))
+    addToChangeLog(EditTypes.BOOTH, undefined, item)
+  }
 
-    setChangeLog((currentLog) => {
-      const updated = new Map(currentLog)
-      updated.set(wineId, newChange)
-      return updated
-    })
+  const submitNewBoothNum = (item: Booth) => {
+    submitOverrideRef.current = {
+      [String(item.ID)]: {
+        booth: { ...item, ID: item.ID, number: item.number, bottles: [] },
+        type: EditTypes.BOOTH,
+      },
+    }
+    formRef.current?.requestSubmit()
+  }
+
+  const addToChangeLog = (type: EditTypes, bottle?: Bottle, booth?: Booth) => {
+    if (bottle) {
+      const wineId = String(bottle["Wine_ID"])
+      const newChange: Edit = { bottle, type }
+
+      setChangeLog((currentLog) => {
+        const updated = new Map(currentLog)
+        updated.set(wineId, newChange)
+        return updated
+      })
+    }
+
+    if (booth) {
+      const boothId = String(booth.ID)
+      const boothSansBottles = {...booth, bottles: []} // we don't need the bottles on the backend, so empty it
+      const newChange: Edit = { booth: boothSansBottles, type }
+
+      setChangeLog((currentLog) => {
+        const updated = new Map(currentLog)
+        updated.set(boothId, newChange)
+        return updated
+      })
+    }
   }
 
   const postForm = async (overrideLog?: Record<string, Edit>) => {
@@ -308,7 +343,7 @@ function App() {
     if (!activeBoothName) return
     const booth = getActiveBooth(booths, activeBoothName)
     setActiveBooth(booth)
-  }, [bottles, activeBoothName])
+  }, [bottles, booths, activeBoothName])
 
   useEffect(() => {
     setAddingBottle(false)
@@ -333,6 +368,11 @@ function App() {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload)
 
   }, [dirtyCount, changeLog])
+
+  const boothDirty = activeBooth
+    ? changeLog.get(String(activeBooth.ID))
+    : undefined
+  const hasPendingBoothChange = boothDirty?.type === EditTypes.BOOTH && boothDirty.booth !== undefined
 
   return <>
     <form id="formroot" action="" onSubmit={handleSubmit} ref={formRef} onKeyDown={(e) => {
@@ -367,15 +407,19 @@ function App() {
           <i>Currently Editing</i>
           <h3 style={{ padding: 0, margin: 0 }}>{activeBoothName}</h3>
         </div>
-        {/* {isAdmin && <div className="InputSelect">
-          <label htmlFor={`set-booth-number`}>Booth Number: </label>
-          <input
-            id={`set-booth-number`}
-            type="text"
-            value={activeBooth.number}
-            onChange={(e) => { handleChangeBoothNum("Booth #", e.target.value) }}
-          />
-        </div>} */}
+        {isAdmin && (
+          <div className='flex row'>
+            <label htmlFor="boothNum">Booth Number:&nbsp;&nbsp;</label>
+            <input type="text" name="boothNum" id="boothNum" onChange={(e) => {
+              setActiveBooth({ ...activeBooth, number: e.target.value })
+              handleChangeBoothNum({ ...activeBooth, number: e.target.value })
+              }} value={activeBooth.number} />
+            <button id="submit_boothNum" className="utility flex row btn" disabled={!hasPendingBoothChange} style={{ padding: "2px", background: "rgb(84, 84, 84)", outline: "none" }}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); submitNewBoothNum(activeBooth) }}>
+              <Icon_Save />
+            </button>
+          </div>
+        )}
         <ul>
           <li>View your wine details below by clicking a wine.</li>
           <li> If you would like to edit the details, select <b>Edit Wine</b> below the details section.</li>

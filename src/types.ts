@@ -38,9 +38,10 @@ export type Distributor = {
     booths: Booth[]
 }
 
-export enum EditTypes { CHANGE="CHANGE", ADD="ADD", DELETE="DELETE" }
+export enum EditTypes { CHANGE="CHANGE", ADD="ADD", DELETE="DELETE", BOOTH="BOOTH" } // booth updates matching booth ID's on the backend
 
 export type Edit = {
-    bottle: Bottle
+    bottle?: Bottle
+    booth?: Booth
     type: EditTypes
 }

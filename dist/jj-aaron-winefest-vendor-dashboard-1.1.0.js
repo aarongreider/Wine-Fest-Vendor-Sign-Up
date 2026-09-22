@@ -12118,6 +12118,7 @@ var EditTypes = /* @__PURE__ */ ((EditTypes2) => {
   EditTypes2["CHANGE"] = "CHANGE";
   EditTypes2["ADD"] = "ADD";
   EditTypes2["DELETE"] = "DELETE";
+  EditTypes2["BOOTH"] = "BOOTH";
   return EditTypes2;
 })(EditTypes || {});
 var reactDomExports = requireReactDom();
@@ -12578,7 +12579,7 @@ function App() {
   const [addingBottle, setAddingBottle] = reactExports.useState(false);
   reactExports.useEffect(() => {
     fetchData();
-    console.log("v 1.1.1");
+    console.log("v 1.1.2");
   }, []);
   const fetchData = async () => {
     try {
@@ -12663,8 +12664,8 @@ function App() {
     if (!isFormValid) return;
     const boothName = name.trim();
     if (!boothName) return;
-    const boothNumber = String(Date.now());
     const boothId = crypto.randomUUID();
+    const boothNumber = boothId;
     setBooths((currentBooths) => {
       if (currentBooths.some((booth) => booth.name === boothName)) {
         return currentBooths;
@@ -12685,7 +12686,7 @@ function App() {
     const prompt2 = confirm(`are you sure you want to delete ${item.Wine_Name}?`);
     if (!prompt2) return;
     const wineId = String(item["Wine_ID"]);
-    addToChangeLog(item, EditTypes.DELETE);
+    addToChangeLog(EditTypes.DELETE, item);
     setBottles((currentBottles) => currentBottles.filter(
       (bottle) => String(bottle["Wine_ID"]) !== wineId
     ));
@@ -12719,7 +12720,7 @@ function App() {
     console.log("adding item, ", item.Wine_Name, item.Booth_Name);
     if (!activeBoothName) return;
     const wineId = String(item["Wine_ID"]);
-    addToChangeLog(item, EditTypes.ADD);
+    addToChangeLog(EditTypes.ADD, item);
     setBottles((currentBottles) => [...currentBottles, item]);
     setBooths(
       (currentBooths) => currentBooths.map(
@@ -12736,7 +12737,7 @@ function App() {
   };
   const changeBottle = (item) => {
     console.log("changing item, ", item.Wine_Name, item.Booth_Name);
-    addToChangeLog(item, EditTypes.CHANGE);
+    addToChangeLog(EditTypes.CHANGE, item);
     setBottles((currentBottles) => currentBottles.map(
       (bottle) => String(bottle["Wine_ID"]) === String(item["Wine_ID"]) ? item : bottle
     ));
@@ -12750,14 +12751,43 @@ function App() {
       )
     );
   };
-  const addToChangeLog = (bottle, type) => {
-    const wineId = String(bottle["Wine_ID"]);
-    const newChange = { bottle, type };
-    setChangeLog((currentLog) => {
-      const updated = new Map(currentLog);
-      updated.set(wineId, newChange);
-      return updated;
-    });
+  const handleChangeBoothNum = (item) => {
+    console.log(`Changing booth ${item.ID} number to ${item.number}`);
+    setBottles((currentBottles) => currentBottles.map(
+      (bottle) => bottle.Booth_ID === item.ID ? { ...bottle, "Booth #": item.number } : bottle
+    ));
+    addToChangeLog(EditTypes.BOOTH, void 0, item);
+  };
+  const submitNewBoothNum = (item) => {
+    var _a2;
+    submitOverrideRef.current = {
+      [String(item.ID)]: {
+        booth: { ...item, ID: item.ID, number: item.number, bottles: [] },
+        type: EditTypes.BOOTH
+      }
+    };
+    (_a2 = formRef.current) == null ? void 0 : _a2.requestSubmit();
+  };
+  const addToChangeLog = (type, bottle, booth) => {
+    if (bottle) {
+      const wineId = String(bottle["Wine_ID"]);
+      const newChange = { bottle, type };
+      setChangeLog((currentLog) => {
+        const updated = new Map(currentLog);
+        updated.set(wineId, newChange);
+        return updated;
+      });
+    }
+    if (booth) {
+      const boothId = String(booth.ID);
+      const boothSansBottles = { ...booth, bottles: [] };
+      const newChange = { booth: boothSansBottles, type };
+      setChangeLog((currentLog) => {
+        const updated = new Map(currentLog);
+        updated.set(boothId, newChange);
+        return updated;
+      });
+    }
   };
   const postForm = async (overrideLog) => {
     const payloadLog = overrideLog ?? Object.fromEntries(changeLog);
@@ -12804,7 +12834,7 @@ function App() {
     if (!activeBoothName) return;
     const booth = getActiveBooth(booths, activeBoothName);
     setActiveBooth(booth);
-  }, [bottles, activeBoothName]);
+  }, [bottles, booths, activeBoothName]);
   reactExports.useEffect(() => {
     setAddingBottle(false);
   }, [activeBoothName]);
@@ -12821,6 +12851,8 @@ function App() {
     }
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [dirtyCount, changeLog]);
+  const boothDirty = activeBooth ? changeLog.get(String(activeBooth.ID)) : void 0;
+  const hasPendingBoothChange = (boothDirty == null ? void 0 : boothDirty.type) === EditTypes.BOOTH && boothDirty.booth !== void 0;
   return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { id: "formroot", action: "", onSubmit: handleSubmit, ref: formRef, onKeyDown: (e) => {
     if (e.key === "Enter" && !(e.target instanceof HTMLButtonElement)) {
       e.preventDefault();
@@ -12851,6 +12883,28 @@ function App() {
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex column", style: { gap: 0 }, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("i", { children: "Currently Editing" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { style: { padding: 0, margin: 0 }, children: activeBoothName })
+      ] }),
+      isAdmin && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex row", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "boothNum", children: "Booth Number:  " }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "text", name: "boothNum", id: "boothNum", onChange: (e) => {
+          setActiveBooth({ ...activeBooth, number: e.target.value });
+          handleChangeBoothNum({ ...activeBooth, number: e.target.value });
+        }, value: activeBooth.number }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            id: "submit_boothNum",
+            className: "utility flex row btn",
+            disabled: !hasPendingBoothChange,
+            style: { padding: "2px", background: "rgb(84, 84, 84)", outline: "none" },
+            onClick: (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              submitNewBoothNum(activeBooth);
+            },
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon_Save, {})
+          }
+        )
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "View your wine details below by clicking a wine." }),
