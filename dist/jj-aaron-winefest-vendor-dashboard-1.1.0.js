@@ -12579,7 +12579,7 @@ function App() {
   const [addingBottle, setAddingBottle] = reactExports.useState(false);
   reactExports.useEffect(() => {
     fetchData();
-    console.log("v 1.1.2");
+    console.log("v 1.1.3");
   }, []);
   const fetchData = async () => {
     try {
@@ -12858,13 +12858,14 @@ function App() {
       e.preventDefault();
     }
   }, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { color: "red" }, children: "This form is no longer accepting responses. Please contact TJ Askren at taskren@junglejims.com to make last minute revisions." }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "email", children: "Email:  " }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "email", name: "email", id: "email", required: true, onInput: handleChangeSimple })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "email", name: "email", id: "email", required: true, onInput: handleChangeSimple, disabled: true })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "phone", children: "Phone:  " }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "tel", name: "phone", id: "phone", required: true, onInput: handleChangeSimple })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "tel", name: "phone", id: "phone", required: true, onInput: handleChangeSimple, disabled: true })
     ] }),
     !loading ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex column card", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("b", { children: "Add or select your booth" }),

@@ -30,7 +30,7 @@ function App() {
 
   useEffect(() => {
     fetchData();
-    console.log("v 1.1.2")
+    console.log("v 1.1.3")
   }, [])
 
   const fetchData = async () => {
@@ -380,14 +380,15 @@ function App() {
         e.preventDefault()
       }
     }}>
+      <p style={{color: 'red'}}>This form is no longer accepting responses. Please contact TJ Askren at taskren@junglejims.com to make last minute revisions.</p>
 
       <div>
         <label htmlFor="email">Email:&nbsp;&nbsp;</label>
-        <input type="email" name="email" id="email" required onInput={handleChangeSimple} />
+        <input type="email" name="email" id="email" required onInput={handleChangeSimple} disabled/>
       </div>
       <div>
         <label htmlFor="phone">Phone:&nbsp;&nbsp;</label>
-        <input type="tel" name="phone" id="phone" required onInput={handleChangeSimple} />
+        <input type="tel" name="phone" id="phone" required onInput={handleChangeSimple} disabled/>
       </div>
 
       {!loading
